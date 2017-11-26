@@ -112,8 +112,12 @@ public class Board {
         if (!isValid(piece) || board[piece.y][piece.x] == 0) return ans;
         
         Cor dest;
+        
+        //loop over all compass directions
         for (Cor dir : Constants.compass) {
             dest = piece.add(dir);
+            
+            //check if destination is valid and empty
             if (isValid(dest) && board[dest.y][dest.x] == 0) {
                 ans.add(new Move(piece, dir));
             }
@@ -125,17 +129,66 @@ public class Board {
     private LinkedList<Move> calcCanterMoves(Cor piece) {
         LinkedList<Move> ans = new LinkedList<>();
         
+        //check to see if piece is valid
+        if (!isValid(piece) || board[piece.y][piece.x] == 0) return ans;
+        
+        Cor cantered; //tile to be cantered over
+        Cor dest;
+        
+        //loop over all compass directions
+        for (Cor dir : Constants.compass) {
+            cantered = piece.add(dir);
+            dest = cantered.add(dir);
+            
+            //check if destination is valid and empty and check if cantered piece is the same color as the current piece
+            if (isValid(dest) && board[dest.y][dest.x] == 0 && board[cantered.y][cantered.x] == board[piece.y][piece.x]) {
+                ans.add(new Move(piece, dir));
+            }
+        }  
         return ans;
+    }
+    
+    //return the opposite color of the piece, assuming BLACK or WHITE
+    private int opposite(int color) {
+        if (color == Constants.BLACK) return Constants.WHITE;
+        if (color == Constants.WHITE) return Constants.BLACK;
+        return -1;
     }
     
     //calculates the legal capture moves a piece can do
     private LinkedList<Move> calcCaptureMoves(Cor piece) {
         LinkedList<Move> ans = new LinkedList<>();
         
+        //check to see if piece is valid
+        if (!isValid(piece) || board[piece.y][piece.x] == 0) return ans;
+        
+        Cor captured; //tile to be cantered over
+        Cor dest;
+        
+        //loop over all compass directions
+        for (Cor dir : Constants.compass) {
+            captured = piece.add(dir);
+            dest = captured.add(dir);
+            
+            //check if destination is valid and empty and check if cantered piece is the opposite color as the current piece
+            if (isValid(dest) && board[dest.y][dest.x] == 0 && opposite(board[captured.y][captured.x]) == board[piece.y][piece.x]) {
+                ans.add(new Move(piece, dir));
+            }
+        }  
         return ans;
     }
     
     
+    public boolean mustCapture(int color) {
+        for (int row = 0; row < 14; ++row) {
+            for (int col = 0; col < 8; ++col) {
+                if (board[row][col] == color && !calcCaptureMoves(new Cor(col, row)).isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     
     public void print() {
         for (int row = 0; row < 14; ++row) {
@@ -158,6 +211,20 @@ public class Board {
         for (Move m : moves) {
             m.print();
         }
+        System.out.println();
+        
+        for (int i = 0; i < 4; ++i) {
+            board.doMove(new Move(new Cor(2, 4 + i), new Cor(Constants.S)));
+            board.print();
+        }
+        board.mustCapture = board.mustCapture(Constants.WHITE);
+        moves = board.calcMoves(new Cor(2, 8));
+        System.out.println("Valid Moves: ");
+        for (Move m : moves) {
+            m.print();
+        }
+        System.out.println();
+        
         /*
         for (int i = 0; i < 5; ++i) {
             board.doMove(new Move(new Cor(2, 4 + i), new Cor(Constants.S)));
