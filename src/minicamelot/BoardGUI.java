@@ -5,24 +5,21 @@
  */
 package minicamelot;
 
-import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.LinkedList;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JFrame;
-import javax.swing.SwingConstants;
 
 
 /**
@@ -42,7 +39,7 @@ public class BoardGUI extends JPanel {
         board = new Board(b);
         tiles = new ArrayList<>(Constants.ROWS);
         selectedPiece = null;
-        validMoves = new Hashtable<>();
+        validMoves = new HashMap<>();
         
         for (int row = 0; row < Constants.ROWS; ++row) {
             tiles.add(new ArrayList<JLabel>(Constants.COLS));
@@ -59,7 +56,7 @@ public class BoardGUI extends JPanel {
                 tile.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        tileClicked(r, c);
+                        tileClicked(new Cor(c, r));
                     } 
                 });
                 tile.setIcon(iconify("" + board.get(row, col)));
@@ -70,14 +67,21 @@ public class BoardGUI extends JPanel {
     }
     
     //determine what to do depending on what tile the user clicks on
-    public void tileClicked(int row, int col) {
+    public void tileClicked(Cor tile) {
+
         //if a valid piece is clicked on
-        if (board.get(row, col) == Constants.WHITE) {
-            updateSelectedPiece(new Cor(col, row));
+        if (board.get(tile) == Constants.WHITE) {
+            updateSelectedPiece(tile);
+        }
+        //if a valid move is selected
+        else if (validMoves.containsKey(tile)) {
+            board.doMove(validMoves.get(tile));
+            moveSelectedPiece(tile);
         }
         else {
             updateSelectedPiece(null);
         }
+        board.mustCapture = board.mustCapture(Constants.WHITE);
         repaint();
         revalidate();
     }
@@ -90,7 +94,6 @@ public class BoardGUI extends JPanel {
             
             for (Cor dest : validMoves.keySet()) {
                 tiles.get(dest.y).get(dest.x).setIcon(iconify("" + board.get(dest)));
-                //validMoves.remove(dest);
             }
             validMoves.clear();
         }
@@ -114,6 +117,27 @@ public class BoardGUI extends JPanel {
         }
     }
     
+    //moves the selected piece to the chosen destination tile and updates the board
+    public void moveSelectedPiece(Cor destPos) {
+        //set old position tile to open sprite
+        tiles.get(selectedPiece.y).get(selectedPiece.x).setIcon(iconify("" + 0));
+        
+        //reset valid moves
+        for (Cor dest : validMoves.keySet()) {
+            tiles.get(dest.y).get(dest.x).setIcon(iconify("" + board.get(dest)));
+        }
+        validMoves.clear();
+        
+        //update destination pos sprite
+        tiles.get(destPos.y).get(destPos.x).setIcon(iconify("" + board.get(destPos)));
+        
+        //update hopped tile
+        Cor mid = destPos.mid(selectedPiece);
+        tiles.get(mid.y).get(mid.x).setIcon(iconify("" + board.get(mid)));
+        
+        //reset selected piece
+        selectedPiece = null;
+    }
     
     //returns the cors to the first open tile in the direction dir
     //returns start if no open tile is found
@@ -128,13 +152,14 @@ public class BoardGUI extends JPanel {
         return start;
     }
     
+    /*
     public void updateTiles() {
         for (int row = 0; row < Constants.ROWS; ++row) {
             for (int col = 0; col < Constants.COLS; ++col) {
                 
             }
         }
-    }
+    }*/
     
     //create an image icon give a piece value converted to a string
     public ImageIcon iconify(String piece) {
@@ -154,6 +179,7 @@ public class BoardGUI extends JPanel {
     public static void main(String[] args) {
         JFrame jf = new JFrame("Mini Camelot");
         jf.setSize(400, 700);
+        jf.setResizable(false);
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         try {
@@ -171,5 +197,5 @@ public class BoardGUI extends JPanel {
     private Board board;
     private ArrayList<ArrayList<JLabel>> tiles;
     private Cor selectedPiece;
-    private Hashtable<Cor, Move> validMoves;
+    private HashMap<Cor, Move> validMoves;
 }

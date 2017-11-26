@@ -227,7 +227,7 @@ public class Board {
     }
     
     private int[][] board; //array representation of the board
-    private boolean mustCapture; //determines if the pieces must make a capturing move when calculating valid moves
+    public boolean mustCapture; //determines if the pieces must make a capturing move when calculating valid moves
     
     public static void main(String[] args) {
         Board board = new Board();

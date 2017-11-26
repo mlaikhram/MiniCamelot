@@ -26,14 +26,40 @@ public class Cor {
         return ans;
     }
     
-    //implementation for hashmap
-    public int hashCode() {
-        return x * 100 + y;
+    //finds midpoint between 2 cors
+    public Cor mid(Cor c) {
+        Cor sum = add(c);
+        Cor ans = new Cor(sum.x / 2, sum.y / 2);
+        return ans;
     }
     
     //implementation for hashmap
-    public boolean equals(Cor c) {
-        return x == c.x && y == c.y;
+    @Override
+    public int hashCode() {
+        return x * 100 + y;
+    }
+
+    //implementation for hashmap
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Cor other = (Cor) obj;
+        if (this.x != other.x) {
+            return false;
+        }
+        if (this.y != other.y) {
+            return false;
+        }
+        return true;
+    }
+    
+    public void print() {
+        System.out.println("(" + x + ", " + y + ")");
     }
     
     public int x;
