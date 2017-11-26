@@ -13,6 +13,8 @@ import java.util.LinkedList;
  * @author Matthew Laikhram
  */
 public class Constants {
+    public static final int ROWS = 14;
+    public static final int COLS = 8;
     public static final int BLACK = 1;
     public static final int WHITE = 2;
     public static final Cor S = new Cor(0, 1);

@@ -17,11 +17,11 @@ public class Board {
     //Creates a new game board with pieces in the initial position
     public Board() {
         mustCapture = false;
-        board = new int[14][8];
+        board = new int[Constants.ROWS][Constants.COLS];
         
-        for (int row = 0; row < 14; ++row) {
-            for (int col = 0; col < 8; ++col) {
-                if ((row < 3 || row > 10) && (col == 0 || col == 7)) board[row][col] = -1;
+        for (int row = 0; row < Constants.ROWS; ++row) {
+            for (int col = 0; col < Constants.COLS; ++col) {
+                if ((row < 3 || row > 10) && (col == 0 || col == Constants.COLS - 1)) board[row][col] = -1;
                 else if ((row < 2 || row > 11) && (col == 1 || col == 6)) board[row][col] = -1;
                 else if ((row < 1 || row > 12) && (col == 2 || col == 5)) board[row][col] = -1;
                 else if (row == 4 && col > 1 && col < 6) board[row][col] = Constants.WHITE;
@@ -32,9 +32,20 @@ public class Board {
         }
     }
     
+    public Board(Board b) {
+        mustCapture = b.mustCapture;
+        board = new int[Constants.ROWS][Constants.COLS];
+        
+        for (int row = 0; row < Constants.ROWS; ++row) {
+            for (int col = 0; col < Constants.COLS; ++col) {
+                board[row][col] = b.board[row][col];
+            }
+        }
+    }
+    
     //determines if cor value is in range of the board
     public boolean isValid(Cor loc) {
-        if (loc.x < 0 || loc.x > 7 || loc.y < 0 || loc.y > 13 || board[loc.y][loc.x] == -1) {
+        if (loc.x < 0 || loc.x > Constants.COLS - 1 || loc.y < 0 || loc.y > Constants.ROWS - 1 || board[loc.y][loc.x] == -1) {
             return false;
         }
         return true;
@@ -180,8 +191,8 @@ public class Board {
     
     
     public boolean mustCapture(int color) {
-        for (int row = 0; row < 14; ++row) {
-            for (int col = 0; col < 8; ++col) {
+        for (int row = 0; row < Constants.ROWS; ++row) {
+            for (int col = 0; col < Constants.COLS; ++col) {
                 if (board[row][col] == color && !calcCaptureMoves(new Cor(col, row)).isEmpty()) {
                     return true;
                 }
@@ -191,8 +202,8 @@ public class Board {
     }
     
     public void print() {
-        for (int row = 0; row < 14; ++row) {
-            for (int col = 0; col < 8; ++col) {
+        for (int row = 0; row < Constants.ROWS; ++row) {
+            for (int col = 0; col < Constants.COLS; ++col) {
                 System.out.print(abs(board[row][col]) + " ");  
             }
             System.out.println();
@@ -200,7 +211,12 @@ public class Board {
         System.out.println();
     }
     
-    public int[][] board; //array representation of the board
+    //accessor
+    public int get(int row, int col) {
+        return board[row][col];
+    }
+    
+    private int[][] board; //array representation of the board
     private boolean mustCapture; //determines if the pieces must make a capturing move when calculating valid moves
     
     public static void main(String[] args) {
