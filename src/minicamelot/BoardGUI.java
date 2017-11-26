@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -33,56 +34,98 @@ public class BoardGUI extends JPanel {
     //create a new BoardGUI using the given board
     public BoardGUI(Board b) throws IOException {
         
+        //initialize to grid with size
         setLayout(new GridLayout(Constants.ROWS, Constants.COLS));
         setSize(400, 700);
         
+        //initialize members
         board = new Board(b);
         tiles = new ArrayList<>(Constants.ROWS);
         selectedPiece = null;
-        validMoves = new LinkedList<>();
+        validMoves = new Hashtable<>();
         
         for (int row = 0; row < Constants.ROWS; ++row) {
             tiles.add(new ArrayList<JLabel>(Constants.COLS));
         }
-        
-        ArrayList<Color> colors = new ArrayList<>();
-        colors.add(Color.RED);
-        colors.add(Color.GRAY);
-        colors.add(Color.BLACK);
-        colors.add(Color.WHITE);
 
+        //for each position in the matrix of tiles, create a tile (jlabel)
         for (int row = 0; row < Constants.ROWS; ++row) {
             for (int col = 0; col < Constants.COLS; ++col) {
                 final int r = row;
                 final int c = col;
                 JLabel tile = new JLabel();
+                
+                //add a click event for each tile
                 tile.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         tileClicked(r, c);
                     } 
                 });
-                String path = Paths.get("", "src", "img", "" + board.get(row, col) + ".jpg").toAbsolutePath().toString();
-                BufferedImage img = Constants.resize(ImageIO.read(new File(path)), 50, 50);
-                tile.setIcon(new ImageIcon(img));
+                tile.setIcon(iconify("" + board.get(row, col)));
                 tiles.get(row).add(col, tile);
                 add(tiles.get(row).get(col));
             }
         }
     }
     
+    //determine what to do depending on what tile the user clicks on
     public void tileClicked(int row, int col) {
         //if a valid piece is clicked on
         if (board.get(row, col) == Constants.WHITE) {
-            selectedPiece = new Cor(col, row);
+            updateSelectedPiece(new Cor(col, row));
+        }
+        else {
+            updateSelectedPiece(null);
+        }
+        repaint();
+        revalidate();
+    }
+    
+    //update to the most recently clicked on piece, along with valid moves
+    public void updateSelectedPiece(Cor piece) {
+        //if there is an old selected piece, reset its sprite and valid moves      
+        if (selectedPiece != null) {
+            tiles.get(selectedPiece.y).get(selectedPiece.x).setIcon(iconify("" + board.get(selectedPiece)));
             
+            for (Cor dest : validMoves.keySet()) {
+                tiles.get(dest.y).get(dest.x).setIcon(iconify("" + board.get(dest)));
+                //validMoves.remove(dest);
+            }
+            validMoves.clear();
+        }
+        
+        //if no piece was selected or the same piece was selected, reset the selectedPiece
+        if (piece == null || (selectedPiece != null && selectedPiece.equals(piece))) {
+            selectedPiece = null;
+            return;
+        }
+        
+        //set new piece to selected and update sprite
+        selectedPiece = new Cor(piece);
+        tiles.get(piece.y).get(piece.x).setIcon(iconify("" + board.get(piece) + "selected"));
+        
+        //update valid moves
+        LinkedList<Move> moves = board.calcMoves(piece);
+        for (Move m : moves) {
+            Cor dest = firstOpen(piece, m.dir);
+            validMoves.put(dest, m);
+            tiles.get(dest.y).get(dest.x).setIcon(iconify("" + board.get(dest) + "selected"));
         }
     }
     
-    public void updateValidMoves() {
-        for (Move m : validMoves) {
-            
+    
+    //returns the cors to the first open tile in the direction dir
+    //returns start if no open tile is found
+    private Cor firstOpen(Cor start, Cor dir) {
+        Cor pos = new Cor(start);
+        while (board.isValid(pos)) {
+            pos = pos.add(dir);
+            if (board.get(pos) == 0) {
+                return pos;
+            }
         }
+        return start;
     }
     
     public void updateTiles() {
@@ -90,6 +133,21 @@ public class BoardGUI extends JPanel {
             for (int col = 0; col < Constants.COLS; ++col) {
                 
             }
+        }
+    }
+    
+    //create an image icon give a piece value converted to a string
+    public ImageIcon iconify(String piece) {
+        try {
+            String path = Paths.get("", "src", "img", piece + ".jpg").toAbsolutePath().toString();
+            BufferedImage img = Constants.resize(ImageIO.read(new File(path)), 50, 50);
+            return new ImageIcon(img);
+        }
+        catch (IOException e) {
+            String path = Paths.get("", "src", "img").toAbsolutePath().toString();
+            System.out.println("Error: Image not found");
+            System.out.println("Current path to img is: " + path);
+            return new ImageIcon();
         }
     }
     
@@ -113,5 +171,5 @@ public class BoardGUI extends JPanel {
     private Board board;
     private ArrayList<ArrayList<JLabel>> tiles;
     private Cor selectedPiece;
-    private LinkedList<Move> validMoves;
+    private Hashtable<Cor, Move> validMoves;
 }

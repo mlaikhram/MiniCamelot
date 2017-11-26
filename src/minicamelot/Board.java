@@ -213,7 +213,17 @@ public class Board {
     
     //accessor
     public int get(int row, int col) {
+        if (!isValid(new Cor(col, row))){
+            return -1;
+        }
         return board[row][col];
+    }
+    
+    public int get(Cor c) {
+        if (!isValid(c)){
+            return -1;
+        }
+        return board[c.y][c.x];
     }
     
     private int[][] board; //array representation of the board

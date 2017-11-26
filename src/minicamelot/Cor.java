@@ -26,6 +26,16 @@ public class Cor {
         return ans;
     }
     
+    //implementation for hashmap
+    public int hashCode() {
+        return x * 100 + y;
+    }
+    
+    //implementation for hashmap
+    public boolean equals(Cor c) {
+        return x == c.x && y == c.y;
+    }
+    
     public int x;
     public int y;
 }
