@@ -6,6 +6,7 @@
 package minicamelot;
 
 import static java.lang.Math.abs; //remove import after done testing
+import java.util.LinkedList;
 
 /**
  *
@@ -31,53 +32,110 @@ public class Board {
         }
     }
     
+    //determines if cor value is in range of the board
+    public boolean isValid(Cor loc) {
+        if (loc.x < 0 || loc.x > 7 || loc.y < 0 || loc.y > 13 || board[loc.y][loc.x] == -1) {
+            return false;
+        }
+        return true;
+    }
+    
+    //applies a given move to the board, if the move is legal
     public void doMove(Move m) {
-        try {
-            //check to see if move contains a valid piece
-            if (board[m.piece.y][m.piece.x] <= 0) return;
-            
-            //record the color of the current piece
-            int pColor = board[m.piece.y][m.piece.x];
-            
-            Cor newPos = new Cor(m.piece.add(m.dir));
+        //check to see if move contains a valid piece
+        if (!isValid(m.piece) || board[m.piece.y][m.piece.x] == 0) return;
+
+        //record the color of the current piece
+        int pColor = board[m.piece.y][m.piece.x];
+
+        Cor newPos = new Cor(m.piece.add(m.dir));
+
+        //check for moving out of bounds
+        if (!isValid(newPos)) return;
+
+        //if space is not occupied, move to it
+        if (board[newPos.y][newPos.x] == 0) {
+            board[m.piece.y][m.piece.x] = 0;
+            board[newPos.y][newPos.x] = pColor;
+        }
+
+        //otherwise try moving one space beyond that point
+        else {
+
+            //record the piece in the adjacent tile
+            int hopColor = board[newPos.y][newPos.x];
+
+            //keep track of and increment the newPos
+            Cor hopPos = new Cor(newPos);
+            newPos = newPos.add(m.dir);
 
             //check for hopping out of bounds
-            if (board[newPos.y][newPos.x] < 0) return;
-            
-            //if space is not occupied, move to it
+            if (!isValid(newPos)) return;
+
             if (board[newPos.y][newPos.x] == 0) {
                 board[m.piece.y][m.piece.x] = 0;
                 board[newPos.y][newPos.x] = pColor;
-            }
-            
-            //otherwise try moving one space beyond that point
-            else {
-                
-                //record the piece in the adjacent tile
-                int hopColor = board[newPos.y][newPos.x];
-                
-                //keep track of and increment the newPos
-                Cor hopPos = new Cor(newPos);
-                newPos = newPos.add(m.dir);
-                
-                //check for hopping out of bounds
-                if (board[newPos.y][newPos.x] < 0) return;
-                
-                if (board[newPos.y][newPos.x] == 0) {
-                    board[m.piece.y][m.piece.x] = 0;
-                    board[newPos.y][newPos.x] = pColor;
-                    
-                    //check to see if it was a capturing move
-                    if (hopColor != pColor) {
-                        board[hopPos.y][hopPos.x] = 0;
-                    }
+
+                //check to see if it was a capturing move
+                if (hopColor != pColor) {
+                    board[hopPos.y][hopPos.x] = 0;
                 }
             }
-        }
-        catch (IndexOutOfBoundsException e) {
-            
-        }
+        }       
     }
+    
+    //calculates the legal moves a given piece can do
+    public LinkedList<Move> calcMoves(Cor piece) {
+        LinkedList<Move> ans = new LinkedList<>();
+        
+        //check to see if piece is valid
+        if (!isValid(piece) || board[piece.y][piece.x] == 0) return ans;
+        
+        //if a capture move exists, then you must capture
+        if (mustCapture) {
+            ans.addAll(calcCaptureMoves(piece));
+            return ans;
+        }
+        //otherwise you can do a plain move or canter move
+        else {
+            ans.addAll(calcPlainMoves(piece));
+            ans.addAll(calcCanterMoves(piece));
+            return ans;
+        }
+    }      
+    
+    //calculates the legal plain moves a piece can do
+    private LinkedList<Move> calcPlainMoves(Cor piece) {
+        LinkedList<Move> ans = new LinkedList<>();
+        
+        //check to see if piece is valid
+        if (!isValid(piece) || board[piece.y][piece.x] == 0) return ans;
+        
+        Cor dest;
+        for (Cor dir : Constants.compass) {
+            dest = piece.add(dir);
+            if (isValid(dest) && board[dest.y][dest.x] == 0) {
+                ans.add(new Move(piece, dir));
+            }
+        }  
+        return ans;
+    }
+    
+    //calculates the legal canter moves a piece can do
+    private LinkedList<Move> calcCanterMoves(Cor piece) {
+        LinkedList<Move> ans = new LinkedList<>();
+        
+        return ans;
+    }
+    
+    //calculates the legal capture moves a piece can do
+    private LinkedList<Move> calcCaptureMoves(Cor piece) {
+        LinkedList<Move> ans = new LinkedList<>();
+        
+        return ans;
+    }
+    
+    
     
     public void print() {
         for (int row = 0; row < 14; ++row) {
@@ -95,11 +153,17 @@ public class Board {
     public static void main(String[] args) {
         Board board = new Board();
         board.print();
+        LinkedList<Move> moves = board.calcMoves(new Cor(2, 4));
+        System.out.println("Valid Moves: ");
+        for (Move m : moves) {
+            m.print();
+        }
+        /*
         for (int i = 0; i < 5; ++i) {
             board.doMove(new Move(new Cor(2, 4 + i), new Cor(Constants.S)));
             board.print();
         }
         board.doMove(new Move(new Cor(3, 4), new Cor(Constants.SE)));
-        board.print();
+        board.print();*/
     }
 }

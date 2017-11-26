@@ -15,6 +15,10 @@ public class Move {
         dir = _dir;
     }
     
+    public void print() {
+        System.out.println("piece: (" + piece.x + ", " + piece.y + ") to (" + dir.x + ", " + dir.y + ")");
+    }
+    
     public Cor piece;
     public Cor dir;
 }

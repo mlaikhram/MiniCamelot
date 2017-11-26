@@ -5,6 +5,9 @@
  */
 package minicamelot;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+
 /**
  *
  * @author Matthew Laikhram
@@ -20,4 +23,6 @@ public class Constants {
     public static final Cor SW = new Cor(-1, 1);
     public static final Cor NE = new Cor(1, -1);
     public static final Cor NW = new Cor(-1, -1);
+    public static final LinkedList<Cor> compass = new LinkedList<>(Arrays.asList(S, N, E, W, SE, SW, NE, NW));
+    
 }
