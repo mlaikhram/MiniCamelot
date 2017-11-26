@@ -9,8 +9,15 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JFrame;
@@ -24,7 +31,7 @@ import javax.swing.SwingConstants;
 public class BoardGUI extends JPanel {
     
     //create a new BoardGUI using the given board
-    public BoardGUI(Board b) {
+    public BoardGUI(Board b) throws IOException {
         
         setLayout(new GridLayout(Constants.ROWS, Constants.COLS));
         setSize(400, 700);
@@ -55,13 +62,10 @@ public class BoardGUI extends JPanel {
                         tileClicked(r, c);
                     } 
                 });
-                tile.setBackground(colors.get(board.get(row, col) + 1));
-                tile.setOpaque(true);
-                tile.setText("" + board.get(row, col));
-                tile.setHorizontalAlignment(SwingConstants.CENTER);
-                tile.setVerticalAlignment(SwingConstants.CENTER);
+                String path = Paths.get("", "src", "img", "" + board.get(row, col) + ".jpg").toAbsolutePath().toString();
+                BufferedImage img = Constants.resize(ImageIO.read(new File(path)), 50, 50);
+                tile.setIcon(new ImageIcon(img));
                 tiles.get(row).add(col, tile);
-                //tiles.get(row).get(col).setText("" + board.get(row, col));
                 add(tiles.get(row).get(col));
             }
         }
@@ -94,8 +98,15 @@ public class BoardGUI extends JPanel {
         jf.setSize(400, 700);
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        BoardGUI board = new BoardGUI(new Board());
-        jf.add(board);
+        try {
+            BoardGUI board = new BoardGUI(new Board());
+            jf.add(board);
+        }
+        catch (IOException e) {
+            String path = Paths.get("", "src", "img").toAbsolutePath().toString();
+            System.out.println("Error: Image not found");
+            System.out.println("Current path to img is: " + path);
+        }
         jf.setVisible(true);
     }
     
