@@ -21,9 +21,9 @@ public class Board {
         
         for (int row = 0; row < Constants.ROWS; ++row) {
             for (int col = 0; col < Constants.COLS; ++col) {
-                if ((row < 3 || row > 10) && (col == 0 || col == Constants.COLS - 1)) board[row][col] = -1;
-                else if ((row < 2 || row > 11) && (col == 1 || col == 6)) board[row][col] = -1;
-                else if ((row < 1 || row > 12) && (col == 2 || col == 5)) board[row][col] = -1;
+                if ((row < 3 || row > 10) && (col == 0 || col == Constants.COLS - 1)) board[row][col] = row > Constants.ROWS / 2 ? -1 : -2;
+                else if ((row < 2 || row > 11) && (col == 1 || col == 6)) board[row][col] = row > Constants.ROWS / 2 ? -1 : -2;
+                else if ((row < 1 || row > 12) && (col == 2 || col == 5)) board[row][col] = row > Constants.ROWS / 2 ? -1 : -2;
                 else if (row == 4 && col > 1 && col < 6) board[row][col] = Constants.WHITE;
                 else if (row == 5 && col > 2 && col < 5) board[row][col] = Constants.WHITE;
                 else if (row == 8 && col > 2 && col < 5) board[row][col] = Constants.BLACK;
@@ -45,7 +45,7 @@ public class Board {
     
     //determines if cor value is in range of the board
     public boolean isValid(Cor loc) {
-        if (loc.x < 0 || loc.x > Constants.COLS - 1 || loc.y < 0 || loc.y > Constants.ROWS - 1 || board[loc.y][loc.x] == -1) {
+        if (loc.x < 0 || loc.x > Constants.COLS - 1 || loc.y < 0 || loc.y > Constants.ROWS - 1 || board[loc.y][loc.x] <= -1) {
             return false;
         }
         return true;
@@ -214,14 +214,14 @@ public class Board {
     //accessor
     public int get(int row, int col) {
         if (!isValid(new Cor(col, row))){
-            return -1;
+            return row > Constants.ROWS / 2 ? -1 : -2;
         }
         return board[row][col];
     }
     
     public int get(Cor c) {
         if (!isValid(c)){
-            return -1;
+            return c.y > Constants.ROWS / 2 ? -1 : -2;
         }
         return board[c.y][c.x];
     }

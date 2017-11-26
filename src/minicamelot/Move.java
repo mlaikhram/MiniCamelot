@@ -19,6 +19,6 @@ public class Move {
         System.out.println("piece: (" + piece.x + ", " + piece.y + ") to (" + dir.x + ", " + dir.y + ")");
     }
     
-    public Cor piece;
-    public Cor dir;
+    public Cor piece; //the piece to be moved
+    public Cor dir; //the direction to move the piece
 }

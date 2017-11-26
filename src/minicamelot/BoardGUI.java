@@ -46,11 +46,13 @@ public class BoardGUI extends JPanel {
         imgs = new HashMap<>();
         
         //populate imgs
+        imgs.put("-2", iconify("-2"));
         imgs.put("-1", iconify("-1"));
         imgs.put("0", iconify("0"));
-        imgs.put("0selected", iconify("0selected"));
+        imgs.put("0valid", iconify("0valid"));
         imgs.put("1", iconify("1"));
         imgs.put("2", iconify("2"));
+        imgs.put("2valid", iconify("2valid"));
         imgs.put("2selected", iconify("2selected"));
 
 
@@ -68,10 +70,14 @@ public class BoardGUI extends JPanel {
                         tileClicked(new Cor(c, r));
                     } 
                 });
+                
+                //set the appropriate sprite for each tile
+                System.out.print(board.get(row, col) + " ");
                 tile.setIcon(imgs.get("" + board.get(row, col)));
                 tiles.get(row).add(col, tile);
                 add(tiles.get(row).get(col));
             }
+            System.out.println();
         }
     }
     
@@ -122,7 +128,7 @@ public class BoardGUI extends JPanel {
         for (Move m : moves) {
             Cor dest = firstOpen(piece, m.dir);
             validMoves.put(dest, m);
-            tiles.get(dest.y).get(dest.x).setIcon(imgs.get("" + board.get(dest) + "selected"));
+            tiles.get(dest.y).get(dest.x).setIcon(imgs.get("" + board.get(dest) + "valid"));
         }
     }
     
@@ -173,7 +179,7 @@ public class BoardGUI extends JPanel {
     //create an image icon give a piece value converted to a string
     public ImageIcon iconify(String piece) {
         try {
-            String path = Paths.get("", "src", "img", piece + ".jpg").toAbsolutePath().toString();
+            String path = Paths.get("", "src", "img", piece + ".png").toAbsolutePath().toString();
             BufferedImage img = Constants.resize(ImageIO.read(new File(path)), 50, 50);
             return new ImageIcon(img);
         }

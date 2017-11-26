@@ -16,10 +16,15 @@ import java.util.LinkedList;
  * @author Matthew Laikhram
  */
 public class Constants {
+    //dimensions of the board
     public static final int ROWS = 14;
     public static final int COLS = 8;
+    
+    //piece colors (0 if no piece)
     public static final int BLACK = 1;
     public static final int WHITE = 2;
+    
+    //compass directions (unit vectors)
     public static final Cor S = new Cor(0, 1);
     public static final Cor N = new Cor(0, -1);
     public static final Cor E = new Cor(1, 0);
@@ -30,6 +35,7 @@ public class Constants {
     public static final Cor NW = new Cor(-1, -1);
     public static final LinkedList<Cor> compass = new LinkedList<>(Arrays.asList(S, N, E, W, SE, SW, NE, NW));
     
+    //resizes image to given width/height
     public static BufferedImage resize(BufferedImage image, int width, int height) {
         BufferedImage bi = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);
         Graphics2D g2d = (Graphics2D) bi.createGraphics();
