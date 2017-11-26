@@ -38,12 +38,21 @@ public class BoardGUI extends JPanel {
         //initialize members
         board = new Board(b);
         tiles = new ArrayList<>(Constants.ROWS);
-        selectedPiece = null;
-        validMoves = new HashMap<>();
-        
         for (int row = 0; row < Constants.ROWS; ++row) {
             tiles.add(new ArrayList<JLabel>(Constants.COLS));
         }
+        selectedPiece = null;
+        validMoves = new HashMap<>();
+        imgs = new HashMap<>();
+        
+        //populate imgs
+        imgs.put("-1", iconify("-1"));
+        imgs.put("0", iconify("0"));
+        imgs.put("0selected", iconify("0selected"));
+        imgs.put("1", iconify("1"));
+        imgs.put("2", iconify("2"));
+        imgs.put("2selected", iconify("2selected"));
+
 
         //for each position in the matrix of tiles, create a tile (jlabel)
         for (int row = 0; row < Constants.ROWS; ++row) {
@@ -59,7 +68,7 @@ public class BoardGUI extends JPanel {
                         tileClicked(new Cor(c, r));
                     } 
                 });
-                tile.setIcon(iconify("" + board.get(row, col)));
+                tile.setIcon(imgs.get("" + board.get(row, col)));
                 tiles.get(row).add(col, tile);
                 add(tiles.get(row).get(col));
             }
@@ -90,10 +99,10 @@ public class BoardGUI extends JPanel {
     public void updateSelectedPiece(Cor piece) {
         //if there is an old selected piece, reset its sprite and valid moves      
         if (selectedPiece != null) {
-            tiles.get(selectedPiece.y).get(selectedPiece.x).setIcon(iconify("" + board.get(selectedPiece)));
+            tiles.get(selectedPiece.y).get(selectedPiece.x).setIcon(imgs.get("" + board.get(selectedPiece)));
             
             for (Cor dest : validMoves.keySet()) {
-                tiles.get(dest.y).get(dest.x).setIcon(iconify("" + board.get(dest)));
+                tiles.get(dest.y).get(dest.x).setIcon(imgs.get("" + board.get(dest)));
             }
             validMoves.clear();
         }
@@ -106,34 +115,34 @@ public class BoardGUI extends JPanel {
         
         //set new piece to selected and update sprite
         selectedPiece = new Cor(piece);
-        tiles.get(piece.y).get(piece.x).setIcon(iconify("" + board.get(piece) + "selected"));
+        tiles.get(piece.y).get(piece.x).setIcon(imgs.get("" + board.get(piece) + "selected"));
         
         //update valid moves
         LinkedList<Move> moves = board.calcMoves(piece);
         for (Move m : moves) {
             Cor dest = firstOpen(piece, m.dir);
             validMoves.put(dest, m);
-            tiles.get(dest.y).get(dest.x).setIcon(iconify("" + board.get(dest) + "selected"));
+            tiles.get(dest.y).get(dest.x).setIcon(imgs.get("" + board.get(dest) + "selected"));
         }
     }
     
     //moves the selected piece to the chosen destination tile and updates the board
     public void moveSelectedPiece(Cor destPos) {
         //set old position tile to open sprite
-        tiles.get(selectedPiece.y).get(selectedPiece.x).setIcon(iconify("" + 0));
+        tiles.get(selectedPiece.y).get(selectedPiece.x).setIcon(imgs.get("" + 0));
         
         //reset valid moves
         for (Cor dest : validMoves.keySet()) {
-            tiles.get(dest.y).get(dest.x).setIcon(iconify("" + board.get(dest)));
+            tiles.get(dest.y).get(dest.x).setIcon(imgs.get("" + board.get(dest)));
         }
         validMoves.clear();
         
         //update destination pos sprite
-        tiles.get(destPos.y).get(destPos.x).setIcon(iconify("" + board.get(destPos)));
+        tiles.get(destPos.y).get(destPos.x).setIcon(imgs.get("" + board.get(destPos)));
         
         //update hopped tile
         Cor mid = destPos.mid(selectedPiece);
-        tiles.get(mid.y).get(mid.x).setIcon(iconify("" + board.get(mid)));
+        tiles.get(mid.y).get(mid.x).setIcon(imgs.get("" + board.get(mid)));
         
         //reset selected piece
         selectedPiece = null;
@@ -198,4 +207,5 @@ public class BoardGUI extends JPanel {
     private ArrayList<ArrayList<JLabel>> tiles;
     private Cor selectedPiece;
     private HashMap<Cor, Move> validMoves;
+    private HashMap<String, ImageIcon> imgs;
 }
