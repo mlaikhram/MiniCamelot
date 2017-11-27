@@ -41,6 +41,7 @@ public class BoardGUI extends JPanel {
         //initialize members
         board = new Board(b);
         ai = new PlayerAI(3);
+        isPlayerTurn = true;
         aiTimer = new Timer(1500, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -93,7 +94,7 @@ public class BoardGUI extends JPanel {
     //determine what to do depending on what tile the user clicks on
     public void tileClicked(Cor tile) {
         
-        //boolean aiTurn = false;
+        if (!isPlayerTurn) return;
         
         //if a valid piece is clicked on
         if (board.get(tile) == Constants.WHITE) {
@@ -103,7 +104,8 @@ public class BoardGUI extends JPanel {
         else if (validMoves.containsKey(tile)) {
             board.doMove(validMoves.get(tile));
             moveSelectedPiece(tile);
-            
+            isPlayerTurn = false;
+                        
             aiTimer.start();
         }
         else {
@@ -126,7 +128,8 @@ public class BoardGUI extends JPanel {
         //update the board
         board.doMove(aiMove);
         moveSelectedPiece(dest);
-
+        isPlayerTurn = true;
+        
         repaint();
         revalidate();
     }
@@ -235,6 +238,7 @@ public class BoardGUI extends JPanel {
     
     private Board board;
     private PlayerAI ai;
+    private boolean isPlayerTurn;
     private Timer aiTimer;
     private ArrayList<ArrayList<JLabel>> tiles;
     private Cor selectedPiece;
