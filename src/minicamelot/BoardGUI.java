@@ -6,6 +6,8 @@
 package minicamelot;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -20,6 +22,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JFrame;
+import javax.swing.Timer;
 
 
 /**
@@ -29,7 +32,7 @@ import javax.swing.JFrame;
 public class BoardGUI extends JPanel {
     
     //create a new BoardGUI using the given board
-    public BoardGUI(Board b) throws IOException {
+    public BoardGUI(Board b) {
         
         //initialize to grid with size
         setLayout(new GridLayout(Constants.ROWS, Constants.COLS));
@@ -37,6 +40,14 @@ public class BoardGUI extends JPanel {
         
         //initialize members
         board = new Board(b);
+        ai = new PlayerAI(3);
+        aiTimer = new Timer(1500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                aiTimer.stop();
+                aiMove();
+            }
+        });
         tiles = new ArrayList<>(Constants.ROWS);
         for (int row = 0; row < Constants.ROWS; ++row) {
             tiles.add(new ArrayList<JLabel>(Constants.COLS));
@@ -72,18 +83,18 @@ public class BoardGUI extends JPanel {
                 });
                 
                 //set the appropriate sprite for each tile
-                System.out.print(board.get(row, col) + " ");
                 tile.setIcon(imgs.get("" + board.get(row, col)));
                 tiles.get(row).add(col, tile);
                 add(tiles.get(row).get(col));
             }
-            System.out.println();
         }
     }
     
     //determine what to do depending on what tile the user clicks on
     public void tileClicked(Cor tile) {
-
+        
+        //boolean aiTurn = false;
+        
         //if a valid piece is clicked on
         if (board.get(tile) == Constants.WHITE) {
             updateSelectedPiece(tile);
@@ -92,11 +103,30 @@ public class BoardGUI extends JPanel {
         else if (validMoves.containsKey(tile)) {
             board.doMove(validMoves.get(tile));
             moveSelectedPiece(tile);
+            
+            aiTimer.start();
         }
         else {
             updateSelectedPiece(null);
         }
-        board.mustCapture = board.mustCapture(Constants.WHITE);
+        repaint();
+        revalidate();     
+    }
+    
+    //allows ai to make a move
+    public void aiMove() {
+        
+        //use alpha-beta search to choose a move
+        Move aiMove = ai.ABSearch(board);
+            
+        //calculate destination tile for selected piece
+        selectedPiece = aiMove.piece;
+        Cor dest = firstOpen(aiMove.piece, aiMove.dir);
+
+        //update the board
+        board.doMove(aiMove);
+        moveSelectedPiece(dest);
+
         repaint();
         revalidate();
     }
@@ -167,14 +197,14 @@ public class BoardGUI extends JPanel {
         return start;
     }
     
-    /*
+    
     public void updateTiles() {
         for (int row = 0; row < Constants.ROWS; ++row) {
             for (int col = 0; col < Constants.COLS; ++col) {
-                
+                tiles.get(row).get(col).setIcon(imgs.get("" + board.get(row, col)));
             }
         }
-    }*/
+    }
     
     //create an image icon give a piece value converted to a string
     public ImageIcon iconify(String piece) {
@@ -197,19 +227,15 @@ public class BoardGUI extends JPanel {
         jf.setResizable(false);
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        try {
-            BoardGUI board = new BoardGUI(new Board());
-            jf.add(board);
-        }
-        catch (IOException e) {
-            String path = Paths.get("", "src", "img").toAbsolutePath().toString();
-            System.out.println("Error: Image not found");
-            System.out.println("Current path to img is: " + path);
-        }
+        BoardGUI board = new BoardGUI(new Board());
+        jf.add(board);
+
         jf.setVisible(true);
     }
     
     private Board board;
+    private PlayerAI ai;
+    private Timer aiTimer;
     private ArrayList<ArrayList<JLabel>> tiles;
     private Cor selectedPiece;
     private HashMap<Cor, Move> validMoves;

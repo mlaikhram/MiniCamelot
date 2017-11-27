@@ -92,7 +92,9 @@ public class Board {
                     board[hopPos.y][hopPos.x] = 0;
                 }
             }
-        }       
+        }
+        
+        mustCapture = mustCapture(opposite(pColor));
     }
     
     //calculates the legal moves a given piece can do
@@ -227,7 +229,7 @@ public class Board {
     }
     
     private int[][] board; //array representation of the board
-    public boolean mustCapture; //determines if the pieces must make a capturing move when calculating valid moves
+    private boolean mustCapture; //determines if the pieces must make a capturing move when calculating valid moves
     
     public static void main(String[] args) {
         Board board = new Board();
