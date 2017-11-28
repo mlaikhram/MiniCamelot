@@ -5,6 +5,7 @@
  */
 package minicamelot;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -43,22 +44,82 @@ public class PlayerAI {
     
     public Move ABSearch(Board b) {
         GameNode node = new GameNode(b, true);
+        Move ans = new Move();
         
         int v = maxv(node, -1000, 1000);
         
-        return RandomSearch(b);
+        LinkedHashMap<GameNode, Move> moves = node.getChildren();
+        for (GameNode child : moves.keySet()) {
+            System.out.println("Checking child");
+            if (eval(child) == v) {
+                System.out.println("match found!");
+                ans = new Move(moves.get(child));
+                break;
+            }
+        }
+        
+        ans.print();
+        return ans;
+        //return RandomSearch(b);
     }
     
     public int maxv(GameNode node, int a, int b) {
-        return 0;
+        if (isTerminal(node)){
+            return eval(node);
+        }
+        int v = -1000;
+        
+        //if node is not expanded, expand
+        if (node.getChildren().isEmpty()) {
+            node.expand();
+        }
+        LinkedHashMap<GameNode, Move> children = node.getChildren();
+        for (GameNode child : children.keySet()){
+            v = max(v, minv(child, a, b));
+            if (v >= b) {
+                return v;
+            }
+            a = max(a, v);
+        }
+        return v;
     }
     
     public int minv(GameNode node, int a, int b) {
-        return 0;
+        if (isTerminal(node)){
+            return eval(node);
+        }
+        int v = 1000;
+        
+        //if node is not expanded, expand
+        if (node.getChildren().isEmpty()) {
+            node.expand();
+        }
+        LinkedHashMap<GameNode, Move> children = node.getChildren();
+        for (GameNode child : children.keySet()){
+            v = min(v, maxv(child, a, b));
+            if (v >= b) {
+                return v;
+            }
+            a = min(a, v);
+        }
+        return v;
+    }
+    
+    public int min(int a, int b) {
+        return a < b ? a : b;
+    }
+    
+    public int max(int a, int b) {
+        return a > b ? a : b;
+    }
+    
+    public boolean isTerminal(GameNode node) {
+        return !node.isMax();
+        //return true;
     }
     
     //evaluation function
-    public int eval(Board b) {
+    public int eval(GameNode node) {
         return 0;
     }
     

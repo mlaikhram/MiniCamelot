@@ -56,7 +56,7 @@ public class GameNode {
                 Board b = new Board(board);
                 b.doMove(move);
                 GameNode child = new GameNode(b, !isMax);
-                children.put(move, child);
+                children.put(child, move);
             }
         }
     }
@@ -89,11 +89,21 @@ public class GameNode {
     }
     
     
+    public LinkedHashMap<GameNode, Move> getChildren() {
+        return children;
+    }
+    
+    
+    public boolean isMax() {
+        return isMax;
+    }
+    
+    
     public void print() {
         System.out.println("Root");
         board.print();
         System.out.println("Children");
-        for (GameNode node : children.values()) {
+        for (GameNode node : children.keySet()) {
             node.board.print();
             System.out.println();
         }
@@ -110,6 +120,6 @@ public class GameNode {
     private final boolean isMax;
     private Board board;
     private LinkedList<Cor> pieces;
-    private LinkedHashMap<Move, GameNode> children; //linkedhashmap keeps the initial order of entries
+    private LinkedHashMap<GameNode, Move> children; //linkedhashmap keeps the initial order of entries
     
 }

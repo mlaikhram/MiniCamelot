@@ -12,9 +12,20 @@ import java.util.Objects;
  * @author Matthew Laikhram
  */
 public class Move {
+    
+    public Move() {
+        piece = new Cor(0, 0);
+        dir = new Cor(0, 0);
+    }
+    
     public Move(Cor _piece, Cor _dir) {
         piece = _piece;
         dir = _dir;
+    }
+    
+    public Move(Move m) {
+        piece = new Cor(m.piece);
+        dir = new Cor(m.dir);
     }
     
     //implementation for hashmap
