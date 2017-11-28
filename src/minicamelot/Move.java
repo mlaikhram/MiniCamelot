@@ -5,6 +5,8 @@
  */
 package minicamelot;
 
+import java.util.Objects;
+
 /**
  *
  * @author Matthew Laikhram
@@ -14,6 +16,34 @@ public class Move {
         piece = _piece;
         dir = _dir;
     }
+    
+    //implementation for hashmap
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Move other = (Move) obj;
+        if (!this.piece.equals(other.piece)) {
+            return false;
+        }
+        if (!this.dir.equals(other.dir)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 19 * hash + Objects.hashCode(this.piece);
+        hash = 19 * hash + Objects.hashCode(this.dir);
+        return hash;
+    }
+    
     
     public void print() {
         System.out.println("piece: (" + piece.x + ", " + piece.y + ") to (" + dir.x + ", " + dir.y + ")");

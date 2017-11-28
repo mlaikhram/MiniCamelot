@@ -6,6 +6,7 @@
 package minicamelot;
 
 import static java.lang.Math.abs; //remove import after done testing
+import java.util.Arrays;
 import java.util.LinkedList;
 
 /**
@@ -226,6 +227,33 @@ public class Board {
             return c.y > Constants.ROWS / 2 ? -1 : -2;
         }
         return board[c.y][c.x];
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Board other = (Board) obj;
+        
+        for (int row = 0; row < Constants.ROWS; ++row) {
+            for (int col = 0; col < Constants.COLS; ++col) {
+                if (this.board[row][col] != other.board[row][col]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 67 * hash + Arrays.deepHashCode(this.board);
+        return hash;
     }
     
     private int[][] board; //array representation of the board

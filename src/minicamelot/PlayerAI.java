@@ -23,7 +23,7 @@ public class PlayerAI {
     }
     
     //Alpha-Beta Search Algorithm
-    public Move ABSearch(Board b) {
+    public Move RandomSearch(Board b) {
         LinkedList<Move> moves = new LinkedList<>();
         
         //get all possible moves
@@ -38,6 +38,23 @@ public class PlayerAI {
         //pick a random move to do
         int index = new Random().nextInt(moves.size());
         return moves.get(index);
+    }
+    
+    
+    public Move ABSearch(Board b) {
+        GameNode node = new GameNode(b, true);
+        
+        int v = maxv(node, -1000, 1000);
+        
+        return RandomSearch(b);
+    }
+    
+    public int maxv(GameNode node, int a, int b) {
+        return 0;
+    }
+    
+    public int minv(GameNode node, int a, int b) {
+        return 0;
     }
     
     //evaluation function

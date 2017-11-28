@@ -232,7 +232,6 @@ public class BoardGUI extends JPanel {
         
         BoardGUI board = new BoardGUI(new Board());
         jf.add(board);
-
         jf.setVisible(true);
     }
     

@@ -5,7 +5,9 @@
  */
 package minicamelot;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Objects;
 
 /**
  *
@@ -39,7 +41,7 @@ public class GameNode {
                 }
             }
         }
-        children = new LinkedList<>();
+        children = new LinkedHashMap<>();
     }
     
     //expand and form child nodes
@@ -50,15 +52,40 @@ public class GameNode {
             LinkedList<Move> moves = board.calcMoves(piece);
             for (Move move : moves) {
                 /* FUTURE: Calc all chain moves for each move 
-                 * FUTURE: store values in a LinkedHashSet to avoid dupes
-                 */
-                
+                 */                
                 Board b = new Board(board);
                 b.doMove(move);
                 GameNode child = new GameNode(b, !isMax);
-                children.add(child);
+                children.put(move, child);
             }
         }
+    }
+    
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final GameNode other = (GameNode) obj;
+        if (this.isMax != other.isMax) {
+            return false;
+        }
+        if (!this.board.equals(other.board)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 71 * hash + (this.isMax ? 1 : 0);
+        hash = 71 * hash + Objects.hashCode(this.board);
+        return hash;
     }
     
     
@@ -66,10 +93,11 @@ public class GameNode {
         System.out.println("Root");
         board.print();
         System.out.println("Children");
-        for (GameNode node : children) {
+        for (GameNode node : children.values()) {
             node.board.print();
             System.out.println();
         }
+        System.out.println(children.size() + " children");
     }
     
             
@@ -82,6 +110,6 @@ public class GameNode {
     private final boolean isMax;
     private Board board;
     private LinkedList<Cor> pieces;
-    private LinkedList<GameNode> children;
+    private LinkedHashMap<Move, GameNode> children; //linkedhashmap keeps the initial order of entries
     
 }
