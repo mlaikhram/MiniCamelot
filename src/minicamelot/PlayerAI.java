@@ -5,7 +5,7 @@
  */
 package minicamelot;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 
 /**
@@ -24,7 +24,7 @@ public class PlayerAI {
     
     //Alpha-Beta Search Algorithm
     public Move ABSearch(Board b) {
-        ArrayList<Move> moves = new ArrayList<>();
+        LinkedList<Move> moves = new LinkedList<>();
         
         //get all possible moves
         for (int row = 0; row < Constants.ROWS; ++row) {
@@ -38,6 +38,11 @@ public class PlayerAI {
         //pick a random move to do
         int index = new Random().nextInt(moves.size());
         return moves.get(index);
+    }
+    
+    //evaluation function
+    public int eval(Board b) {
+        return 0;
     }
     
     
