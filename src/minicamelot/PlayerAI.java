@@ -8,6 +8,15 @@ package minicamelot;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
 
 /**
  *
@@ -23,7 +32,45 @@ public class PlayerAI {
         time = 0;
     }
     
-    //Alpha-Beta Search Algorithm
+    
+    public Move calcBestMove(Board b) throws InterruptedException {
+        ABSearch algo = new ABSearch(this, b);
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        Future<?> future = executor.submit(algo);
+        
+        try {
+            //System.out.println("Started..");
+            try {
+                System.out.println(future.get(2, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                System.out.println("Interrupted Exception");
+                Logger.getLogger(PlayerAI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                System.out.println("Execution Exception");
+                Logger.getLogger(PlayerAI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            //System.out.println("Finished!");
+        } catch (TimeoutException e) {
+            System.out.println("Timeout");
+            future.cancel(true);
+            //System.out.println("Terminated!");
+        }
+
+        executor.shutdownNow();
+        
+        /*if (!executor.awaitTermination(100, TimeUnit.MICROSECONDS)) {
+            System.out.println("Still waiting...");
+            System.exit(0);
+        }
+        System.out.println("Exiting normally...");*/
+        System.out.println("Shut down");
+        
+        System.out.println(algo.getDepth());
+        algo.getMove().print();
+        return algo.getMove();
+    }
+    
+    //Random Search Algorithm
     public Move RandomSearch(Board b) {
         LinkedList<Move> moves = new LinkedList<>();
         
@@ -42,93 +89,38 @@ public class PlayerAI {
     }
     
     
-    public Move ABSearch(Board b) {
-        GameNode node = new GameNode(b, true);
-        Move ans = new Move();
-        
-        int v = maxv(node, -1000, 1000);
-        
-        LinkedHashMap<GameNode, Move> moves = node.getChildren();
-        for (GameNode child : moves.keySet()) {
-            System.out.println("Checking child");
-            if (eval(child) == v) {
-                System.out.println("match found!");
-                ans = new Move(moves.get(child));
-                break;
-            }
-        }
-        
-        ans.print();
-        return ans;
-        //return RandomSearch(b);
-    }
-    
-    public int maxv(GameNode node, int a, int b) {
-        if (isTerminal(node)){
-            return eval(node);
-        }
-        int v = -1000;
-        
-        //if node is not expanded, expand
-        if (node.getChildren().isEmpty()) {
-            node.expand();
-        }
-        LinkedHashMap<GameNode, Move> children = node.getChildren();
-        for (GameNode child : children.keySet()){
-            v = max(v, minv(child, a, b));
-            if (v >= b) {
-                return v;
-            }
-            a = max(a, v);
-        }
-        return v;
-    }
-    
-    public int minv(GameNode node, int a, int b) {
-        if (isTerminal(node)){
-            return eval(node);
-        }
-        int v = 1000;
-        
-        //if node is not expanded, expand
-        if (node.getChildren().isEmpty()) {
-            node.expand();
-        }
-        LinkedHashMap<GameNode, Move> children = node.getChildren();
-        for (GameNode child : children.keySet()){
-            v = min(v, maxv(child, a, b));
-            if (v >= b) {
-                return v;
-            }
-            a = min(a, v);
-        }
-        return v;
-    }
-    
-    public int min(int a, int b) {
-        return a < b ? a : b;
-    }
-    
-    public int max(int a, int b) {
-        return a > b ? a : b;
-    }
-    
     public boolean isTerminal(GameNode node) {
-        return !node.isMax();
-        //return true;
+        return node.getBoard().checkVictory() != -1;
     }
     
     //evaluation function
     public int eval(GameNode node) {
-        return 0;
+        Board b = node.getBoard();
+        int black = 0;
+        int white = 0;
+        for (int row = 0; row < Constants.ROWS; ++row) {
+            for (int col = 0; col < Constants.COLS; ++col) {
+                if (b.get(row, col) == Constants.BLACK) {
+                    ++black;
+                }
+                else if (b.get(row, col) == Constants.WHITE) {
+                    ++white;
+                }
+            }
+        }
+        return black - white;
     }
     
     
     public static void main(String[] args) {
-        Board b = new Board();
-        b.print();
-        PlayerAI ai = new PlayerAI(3);
-        ai.ABSearch(b).print();
+        JFrame jf = new JFrame("Mini Camelot");
+        jf.setSize(400, 700);
+        jf.setResizable(false);
+        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        BoardGUI board = new BoardGUI(new Board());
+        jf.add(board);
+        jf.setVisible(true);
     }
     
     private int difficulty;

@@ -42,7 +42,7 @@ public class BoardGUI extends JPanel {
         board = new Board(b);
         ai = new PlayerAI(3);
         isPlayerTurn = true;
-        aiTimer = new Timer(1500, new ActionListener() {
+        aiTimer = new Timer(1, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 aiTimer.stop();
@@ -119,7 +119,7 @@ public class BoardGUI extends JPanel {
     public void aiMove() {
         
         //use alpha-beta search to choose a move
-        Move aiMove = ai.ABSearch(board);
+        Move aiMove = ai.calcBestMove(board);
             
         //calculate destination tile for selected piece
         selectedPiece = aiMove.piece;

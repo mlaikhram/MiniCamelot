@@ -44,6 +44,13 @@ public class GameNode {
         children = new LinkedHashMap<>();
     }
     
+    public GameNode(GameNode n) {
+        board = new Board(n.board);
+        isMax = n.isMax;
+        pieces = new LinkedList<>(n.pieces);
+        children = new LinkedHashMap<>();
+    }
+    
     //expand and form child nodes
     public void expand() {
         
@@ -96,6 +103,10 @@ public class GameNode {
     
     public boolean isMax() {
         return isMax;
+    }
+    
+    public Board getBoard() {
+        return board;
     }
     
     
