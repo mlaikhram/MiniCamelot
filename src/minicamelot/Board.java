@@ -192,7 +192,7 @@ public class Board {
         return ans;
     }
     
-    
+    //determine if the current player musst make a capture move, assuming its their turn
     public boolean mustCapture(int color) {
         for (int row = 0; row < Constants.ROWS; ++row) {
             for (int col = 0; col < Constants.COLS; ++col) {
@@ -203,6 +203,48 @@ public class Board {
         }
         return false;
     }
+    
+    //checks to see if anyone won
+    //return the color of the player who won, 0 if its a tie, or -1 if the game is not over yet
+    public int checkVictory() {
+        //check if black captured castle
+        if (board[0][(Constants.COLS - 1) / 2]== Constants.BLACK && board[0][Constants.COLS - 1 - ((Constants.COLS - 1) / 2)] == Constants.BLACK) {
+            return Constants.BLACK;
+        }
+        //check if white captured castle
+        if (board[Constants.ROWS - 1][(Constants.COLS - 1) / 2]== Constants.WHITE && board[Constants.ROWS - 1][Constants.COLS - 1 - ((Constants.COLS - 1) / 2)] == Constants.WHITE) {
+            return Constants.BLACK;
+        }
+        int white = 0;
+        int black = 0;
+        //count pieces for each color
+        for (int row = 0; row < Constants.ROWS; ++row) {
+            for (int col = 0; col < Constants.COLS; ++col) {
+                if (board[row][col] == Constants.BLACK) {
+                    ++black;
+                }
+                else if (board[row][col] == Constants.WHITE) {
+                    ++white;
+                }
+                //if both players have more than 1 piece, the game has not ended yet
+                if (white > 1 && black > 1) {
+                    return -1;
+                }
+            }
+        }
+        //if both players have less than 2 pieces, it's a draw
+        if (white < 2 && black < 2) {
+            return 0;
+        }
+        else if (white < 1) {
+            return Constants.BLACK;
+        }
+        else if (black < 1) {
+            return Constants.WHITE;
+        }
+        return -1;
+    }
+    
     
     public void print() {
         for (int row = 0; row < Constants.ROWS; ++row) {
