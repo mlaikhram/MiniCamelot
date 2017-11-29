@@ -30,23 +30,11 @@ public class ABSearch implements Callable<String> {
     public String call() throws Exception {
         int currentDepth = 1;
         while (!Thread.interrupted()) {
-            if (Thread.currentThread().isInterrupted()) break;
             bestMove = ABSearchAlgo(currentDepth);
             ++currentDepth;
         }
-
-        return "done";
+        return "Ready!";
     }
-    /*
-    @Override
-    public void run() {
-        int currentDepth = 1;
-        while (0 == 0) {
-            if (Thread.currentThread().isInterrupted()) break;
-            bestMove = ABSearchAlgo(currentDepth);
-            ++currentDepth;
-        }
-    }*/
     
     //class used in ABSearch to keep track of the best move
     private class Val {

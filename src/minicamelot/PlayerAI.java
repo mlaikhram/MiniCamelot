@@ -33,39 +33,23 @@ public class PlayerAI {
     }
     
     
-    public Move calcBestMove(Board b) throws InterruptedException {
+    public Move calcBestMove(Board b) throws Exception {
         ABSearch algo = new ABSearch(this, b);
-        ExecutorService executor = Executors.newFixedThreadPool(1);
-        Future<?> future = executor.submit(algo);
-        
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<String> future = executor.submit(algo);
+
         try {
-            //System.out.println("Started..");
-            try {
-                System.out.println(future.get(2, TimeUnit.SECONDS));
-            } catch (InterruptedException ex) {
-                System.out.println("Interrupted Exception");
-                Logger.getLogger(PlayerAI.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ExecutionException ex) {
-                System.out.println("Execution Exception");
-                Logger.getLogger(PlayerAI.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            //System.out.println("Finished!");
+            System.out.println("Started..");
+            System.out.println(future.get(3, TimeUnit.SECONDS));
+            System.out.println("Finished!");
         } catch (TimeoutException e) {
-            System.out.println("Timeout");
             future.cancel(true);
-            //System.out.println("Terminated!");
+            System.out.println("Terminated!");
         }
 
         executor.shutdownNow();
         
-        /*if (!executor.awaitTermination(100, TimeUnit.MICROSECONDS)) {
-            System.out.println("Still waiting...");
-            System.exit(0);
-        }
-        System.out.println("Exiting normally...");*/
-        System.out.println("Shut down");
-        
-        System.out.println(algo.getDepth());
+        System.out.println(algo.getDepth()); //not actually depth yet
         algo.getMove().print();
         return algo.getMove();
     }
