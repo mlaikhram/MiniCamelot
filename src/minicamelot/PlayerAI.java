@@ -74,6 +74,10 @@ public class PlayerAI {
     
     
     public boolean isTerminal(GameNode node) {
+        node.expand();
+        if (node.getChildren().isEmpty()){
+            return true;
+        }
         return node.getBoard().checkVictory() != -1;
     }
     
