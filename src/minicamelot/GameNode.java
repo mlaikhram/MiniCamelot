@@ -121,6 +121,10 @@ public class GameNode {
         return pieces.size();
     }
     
+    public Cor getPiece(int i) {
+        return pieces.get(i);
+    }
+    
     
     public void print() {
         System.out.println("Root");
@@ -140,12 +144,28 @@ public class GameNode {
     
             
     public static void main(String[] args) {
-        GameNode node = new GameNode(new Board(1), true);
-        node.print();
+        GameNode node = new GameNode(new Board(), true);
+        //node.print();
         if (node.getChildren().isEmpty()) {
             node.expand();
         }
-        node.print();
+        LinkedList<Move> moves = node.board.calcMoves(node.getPiece(0));
+        
+        for (GameNode child : node.getChildren().keySet()) {
+            node = child;
+            node.expand();
+            //child.print();
+            break;
+        }
+        moves = node.board.calcMoves(node.getPiece(0));
+        for (GameNode child : node.getChildren().keySet()) {
+            node = child;
+            node.expand();
+            child.print();
+            break;
+        }
+        
+        //node.print();
     }
     
     private final boolean isMax;

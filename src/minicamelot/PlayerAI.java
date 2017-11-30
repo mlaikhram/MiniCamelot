@@ -57,7 +57,7 @@ public class PlayerAI {
     }
     
     //Random Search Algorithm
-    public Move RandomSearch(Board b) {
+    /*public Move RandomSearch(Board b) {
         LinkedList<Move> moves = new LinkedList<>();
         
         //get all possible moves
@@ -72,7 +72,7 @@ public class PlayerAI {
         //pick a random move to do
         int index = new Random().nextInt(moves.size());
         return moves.get(index);
-    }
+    }*/
     
     
     public boolean isTerminal(GameNode node) {
@@ -104,13 +104,15 @@ public class PlayerAI {
         for (int row = 0; row < Constants.ROWS; ++row) {
             for (int col = 0; col < Constants.COLS; ++col) {
                 if (b.get(row, col) == Constants.BLACK) {
-                    black += Constants.ROWS - row - 1;
+                    int dist = Constants.ROWS - row - 1;
+                    black += dist;
                 }
                 else if (b.get(row, col) == Constants.WHITE) {
                     white += row;
                 }
             }
         }
+        //return 0;
         return black - white;
     }
     

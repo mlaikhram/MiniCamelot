@@ -29,7 +29,7 @@ public class ABSearch implements Callable<String> {
     //do an iterative deepening approach to have a backup answer in the even that time runs out
     @Override
     public String call() {
-        int depthLimit = 1;
+        int depthLimit = 3;
         while (0 == 0) {
             try { 
                 bestMove = ABSearchAlgo(depthLimit);
@@ -102,7 +102,7 @@ public class ABSearch implements Callable<String> {
         }
         LinkedHashMap<GameNode, Move> children = node.getChildren();
         for (GameNode child : children.keySet()){
-            v = new Val(max(v.v, minv(child, a, b, d + 1, depthLimit).v), child);
+            v = new Val(max(v, new Val(minv(child, a, b, d + 1, depthLimit).v, child)));
             if (v.v >= b) {
                 ++maxPrunes;
                 return v;
@@ -131,7 +131,7 @@ public class ABSearch implements Callable<String> {
         LinkedHashMap<GameNode, Move> children = node.getChildren();
         for (GameNode child : children.keySet()){
             //v.v = min(v.v, maxv(child, a, b, d + 1, depthLimit).v);
-            v = new Val(min(v.v, maxv(child, a, b, d + 1, depthLimit).v), child);
+            v = new Val(min(v, new Val(maxv(child, a, b, d + 1, depthLimit).v, child)));
             if (v.v <= a) {
                 ++minPrunes;
                 return v;
@@ -149,6 +149,16 @@ public class ABSearch implements Callable<String> {
     
     private int max(int a, int b) {
         return a > b ? a : b;
+    }
+    
+    
+    private Val min(Val a, Val b) {
+        return a.v < b.v ? a : b;
+    }
+    
+    
+    private Val max(Val a, Val b) {
+        return a.v > b.v ? a : b;
     }
     
     
