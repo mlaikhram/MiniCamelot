@@ -22,6 +22,7 @@ public class PlayerAI {
     
     public PlayerAI(int diff) {
         difficulty = diff;
+        val = 0;
         depth = 0;
         nodes = 0;
         maxPrunes = 0;
@@ -29,7 +30,7 @@ public class PlayerAI {
         time = 0;
     }
     
-    
+    //run the ABSearch in a new thread with a time limit of 10 seconds
     public Move calcBestMove(Board b) throws Exception {
         ABSearch algo = new ABSearch(this, b);
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -46,7 +47,8 @@ public class PlayerAI {
 
         executor.shutdownNow();
         
-        System.out.println("max depth: " + depth); //not actually depth yet
+        System.out.println("Move value: " + val);
+        System.out.println("Max depth: " + depth);
         System.out.println("Total nodes generated: " + nodes);
         System.out.println("Total max prunes: " + maxPrunes);
         System.out.println("Total min prunes: " + minPrunes);
@@ -74,8 +76,9 @@ public class PlayerAI {
     
     
     public boolean isTerminal(GameNode node) {
-        //node.expand();
-        if (node.countPieces() == 0) {
+        GameNode temp = new GameNode(node);
+        temp.expand();
+        if (temp.getChildren().isEmpty()) {
             return true;
         }
         return node.getBoard().checkVictory() != -1;
@@ -97,6 +100,10 @@ public class PlayerAI {
             }
         }
         return black - white;
+    }
+    
+    public void setVal(int newVal) {
+        val = newVal;
     }
     
     public void setDepth(int newDepth) {
@@ -128,6 +135,7 @@ public class PlayerAI {
     }
     
     private int difficulty;
+    private int val;
     private int depth;
     private int nodes;
     private int maxPrunes;

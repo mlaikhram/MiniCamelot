@@ -19,24 +19,33 @@ public class ABSearch implements Callable<String> {
         ai = _ai;
         board = b;
         bestMove = new Move();
+        val = 0;
         depth = 0;
         totalNodes = 1;
         maxPrunes = 0;
         minPrunes = 0;
     }
     
-    
+    //do an iterative deepening approach to have a backup answer in the even that time runs out
     @Override
     public String call() {
-        int currentDepth = 1;
+        int depthLimit = 1;
         while (0 == 0) {
             try { 
-                bestMove = ABSearchAlgo(currentDepth);
-                ++currentDepth;
+                bestMove = ABSearchAlgo(depthLimit);
+
+                ai.setVal(val);
                 ai.setDepth(depth);
                 ai.setNodes(totalNodes);
                 ai.setMaxPrunes(maxPrunes);
                 ai.setMinPrunes(minPrunes);
+                
+                //if the max depth has been passed by the depth limit, then finish
+                if (depth < depthLimit) {
+                    break;
+                }
+                
+                ++depthLimit;
             } catch (InterruptedException ex) {
                 break;
             }
@@ -67,15 +76,11 @@ public class ABSearch implements Callable<String> {
         Move ans;
         
         Val v = new Val(maxv(node, -1000, 1000, 0, depthLimit));
-        //v.node.print();
-        //System.out.println(v);
-        //node.expand();
+        val = v.v;
+
         LinkedHashMap<GameNode, Move> moves = node.getChildren();
-        //v.node.print();
         ans = moves.get(v.node);
 
-        //depth = v.v;
-        //ans.print();
         return ans;
     }
     
@@ -93,7 +98,6 @@ public class ABSearch implements Callable<String> {
         //if node is not expanded, expand
         if (node.getChildren().isEmpty()) {
             node.expand();
-            //node.print();
             totalNodes += node.getChildren().size();
         }
         LinkedHashMap<GameNode, Move> children = node.getChildren();
@@ -122,7 +126,6 @@ public class ABSearch implements Callable<String> {
         //if node is not expanded, expand
         if (node.getChildren().isEmpty()) {
             node.expand();
-            //node.print();
             totalNodes += node.getChildren().size();
         }
         LinkedHashMap<GameNode, Move> children = node.getChildren();
@@ -149,16 +152,6 @@ public class ABSearch implements Callable<String> {
     }
     
     
-    private Val min(Val a, Val b) {
-        return a.v < b.v ? a : b;
-    }
-    
-    
-    private Val max(Val a, Val b) {
-        return a.v > b.v ? a : b;
-    }
-    
-    
     public Move getMove() {
         return bestMove;
     }
@@ -172,6 +165,7 @@ public class ABSearch implements Callable<String> {
     private PlayerAI ai;
     private Board board;
     private Move bestMove;
+    private int val;
     private int depth;
     private int totalNodes;
     private int maxPrunes;

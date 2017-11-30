@@ -5,6 +5,8 @@
  */
 package minicamelot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -57,7 +59,14 @@ public class Move {
     
     
     public void print() {
-        System.out.println("piece: (" + piece.x + ", " + piece.y + ") to (" + dir.x + ", " + dir.y + ")");
+        String d = "?";
+        ArrayList<String> directions = new ArrayList<>(Arrays.asList("S", "N", "E", "W", "SE", "SW", "NE", "NW"));
+        for (int i = 0; i < Constants.compass.size(); ++i) {
+            if (Constants.compass.get(i).equals(dir)) {
+                d = directions.get(i);
+            }
+        }
+        System.out.println("piece: (" + piece.x + ", " + piece.y + ") " + d);
     }
     
     public Cor piece; //the piece to be moved

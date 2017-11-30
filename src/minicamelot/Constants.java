@@ -8,8 +8,8 @@ package minicamelot;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 
 /**
  *
@@ -33,7 +33,7 @@ public class Constants {
     public static final Cor SW = new Cor(-1, 1);
     public static final Cor NE = new Cor(1, -1);
     public static final Cor NW = new Cor(-1, -1);
-    public static final LinkedList<Cor> compass = new LinkedList<>(Arrays.asList(S, N, E, W, SE, SW, NE, NW));
+    public static final ArrayList<Cor> compass = new ArrayList<>(Arrays.asList(S, N, E, W, SE, SW, NE, NW));
     
     //resizes image to given width/height
     public static BufferedImage resize(BufferedImage image, int width, int height) {

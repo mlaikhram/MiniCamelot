@@ -44,6 +44,7 @@ public class BoardGUI extends JPanel {
         board = new Board(b);
         ai = new PlayerAI(3);
         isPlayerTurn = true;
+        gameOver = false;
         aiTimer = new Timer(1, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -101,7 +102,7 @@ public class BoardGUI extends JPanel {
     //determine what to do depending on what tile the user clicks on
     public void tileClicked(Cor tile) {
         
-        if (!isPlayerTurn) return;
+        if (!isPlayerTurn || gameOver) return;
         
         //if a valid piece is clicked on
         if (board.get(tile) == Constants.WHITE) {
@@ -112,9 +113,12 @@ public class BoardGUI extends JPanel {
             board.doMove(validMoves.get(tile));
             moveSelectedPiece(tile);
             isPlayerTurn = false;
-                        
-            aiTimer.start();
+            
+            if (!gameOver) {
+                aiTimer.start();
+            }
         }
+        //if the player clicked elsewhere, then unclick the currentPiece
         else {
             updateSelectedPiece(null);
         }
@@ -136,6 +140,8 @@ public class BoardGUI extends JPanel {
         board.doMove(aiMove);
         moveSelectedPiece(dest);
         isPlayerTurn = true;
+        
+        System.out.println("Current board value: " + ai.eval(new GameNode(board, false)));
         
         repaint();
         revalidate();
@@ -192,6 +198,9 @@ public class BoardGUI extends JPanel {
         
         //reset selected piece
         selectedPiece = null;
+        
+        //check for game over state
+        checkForGameOver();
     }
     
     //returns the cors to the first open tile in the direction dir
@@ -205,6 +214,27 @@ public class BoardGUI extends JPanel {
             }
         }
         return start;
+    }
+    
+    
+    public void checkForGameOver() {
+        int gameState = board.checkVictory();
+        if (gameState == -1) {
+            return;
+        }
+        if (gameState == 0) {
+            System.out.println("It's a draw!");
+        }
+        else if (gameState == Constants.BLACK) {
+            System.out.println("You lose!");
+        }
+        else if (gameState == Constants.WHITE) {
+            System.out.println("You win!");
+        }
+        else {
+            return;
+        }
+        gameOver = true;
     }
     
     
@@ -245,6 +275,7 @@ public class BoardGUI extends JPanel {
     private Board board;
     private PlayerAI ai;
     private boolean isPlayerTurn;
+    private boolean gameOver;
     private Timer aiTimer;
     private ArrayList<ArrayList<JLabel>> tiles;
     private Cor selectedPiece;
