@@ -78,11 +78,9 @@ public class PlayerAI {
     public boolean isTerminal(GameNode node) {
         GameNode temp = new GameNode(node);
         temp.expand();
-        System.out.println("Checking for children");
         if (temp.getChildren().isEmpty()) {
             return true;
         }
-        System.out.println("checking for game over");
         return node.getBoard().checkVictory() != -1;
     }
     

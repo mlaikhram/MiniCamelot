@@ -31,13 +31,20 @@ public class GameNode {
         
         //find all appropriate pieces on the board
         //pieces are added in order from top middle to bottom borders
-        for (int row = 0; row < Constants.ROWS; ++row) {
+        /*for (int row = 0; row < Constants.ROWS; ++row) {
             for (int col = (Constants.COLS - 1) / 2; col >= 0; --col) {
                 if (board.get(row, col) == color) {
                     pieces.add(new Cor(col, row));
                 }
                 else if (board.get(row, Constants.COLS - 1 - col) == color) {
                     pieces.add(new Cor(Constants.COLS - 1 - col, row));
+                }
+            }
+        }*/
+        for (int row = 0; row < Constants.ROWS; ++row) {
+            for (int col = 0; col < Constants.COLS; ++col) {
+                if (board.get(row, col) == color) {
+                    pieces.add(new Cor(col, row));
                 }
             }
         }
@@ -124,11 +131,16 @@ public class GameNode {
             System.out.println();
         }
         System.out.println(children.size() + " children");
+        
+        System.out.println("Pieces: ");
+        for (Cor piece : pieces) {
+            piece.print();
+        }
     }
     
             
     public static void main(String[] args) {
-        GameNode node = new GameNode(new Board(), true);
+        GameNode node = new GameNode(new Board(1), true);
         node.print();
         if (node.getChildren().isEmpty()) {
             node.expand();
