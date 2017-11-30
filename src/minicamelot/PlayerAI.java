@@ -87,6 +87,18 @@ public class PlayerAI {
     //evaluation function
     public int eval(GameNode node) {
         Board b = node.getBoard();
+        
+        //check victory states
+        int gameOver = b.checkVictory();
+        switch (gameOver) {
+            case 0:
+                return 0;
+            case Constants.BLACK:
+                return 1000;
+            case Constants.WHITE:
+                return -1000;
+        }
+        
         int black = 0;
         int white = 0;
         for (int row = 0; row < Constants.ROWS; ++row) {
