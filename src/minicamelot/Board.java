@@ -33,6 +33,27 @@ public class Board {
         }
     }
     
+    //TESTING ONLY
+    public Board(int i) {
+        mustCapture = false;
+        board = new int[Constants.ROWS][Constants.COLS];
+        
+        for (int row = 0; row < Constants.ROWS; ++row) {
+            for (int col = 0; col < Constants.COLS; ++col) {
+                if ((row < 3 || row > 10) && (col == 0 || col == Constants.COLS - 1)) board[row][col] = row > Constants.ROWS / 2 ? -1 : -2;
+                else if ((row < 2 || row > 11) && (col == 1 || col == 6)) board[row][col] = row > Constants.ROWS / 2 ? -1 : -2;
+                else if ((row < 1 || row > 12) && (col == 2 || col == 5)) board[row][col] = row > Constants.ROWS / 2 ? -1 : -2;        
+            }
+        }
+        
+        board[6][4] = Constants.WHITE;
+        board[6][5] = Constants.WHITE;
+        board[6][7] = Constants.WHITE;
+        board[8][0] = Constants.BLACK;
+        board[8][3] = Constants.BLACK;
+        board[8][4] = Constants.BLACK;
+    }
+    
     public Board(Board b) {
         mustCapture = b.mustCapture;
         board = new int[Constants.ROWS][Constants.COLS];
@@ -213,7 +234,7 @@ public class Board {
         }
         //check if white captured castle
         if (board[Constants.ROWS - 1][(Constants.COLS - 1) / 2]== Constants.WHITE && board[Constants.ROWS - 1][Constants.COLS - 1 - ((Constants.COLS - 1) / 2)] == Constants.WHITE) {
-            return Constants.BLACK;
+            return Constants.WHITE;
         }
         int white = 0;
         int black = 0;

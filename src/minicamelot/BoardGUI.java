@@ -41,7 +41,7 @@ public class BoardGUI extends JPanel {
         setSize(400, 700);
         
         //initialize members
-        board = new Board(b);
+        board = new Board(1);
         ai = new PlayerAI(3);
         isPlayerTurn = true;
         gameOver = false;
