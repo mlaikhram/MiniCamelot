@@ -110,6 +110,11 @@ public class GameNode {
     }
     
     
+    public int countPieces() {
+        return pieces.size();
+    }
+    
+    
     public void print() {
         System.out.println("Root");
         board.print();
@@ -124,7 +129,10 @@ public class GameNode {
             
     public static void main(String[] args) {
         GameNode node = new GameNode(new Board(), true);
-        node.expand();
+        node.print();
+        if (node.getChildren().isEmpty()) {
+            node.expand();
+        }
         node.print();
     }
     

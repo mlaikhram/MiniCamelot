@@ -20,18 +20,26 @@ public class ABSearch implements Callable<String> {
         board = b;
         bestMove = new Move();
         depth = 0;
-        totalNodes = 0;
+        totalNodes = 1;
         maxPrunes = 0;
         minPrunes = 0;
     }
     
     
     @Override
-    public String call() throws Exception {
+    public String call() {
         int currentDepth = 1;
-        while (!Thread.interrupted()) {
-            bestMove = ABSearchAlgo(currentDepth);
-            ++currentDepth;
+        while (0 == 0) {
+            try { 
+                bestMove = ABSearchAlgo(currentDepth);
+                ++currentDepth;
+                ai.setDepth(depth);
+                ai.setNodes(totalNodes);
+                ai.setMaxPrunes(maxPrunes);
+                ai.setMinPrunes(minPrunes);
+            } catch (InterruptedException ex) {
+                break;
+            }
         }
         return "Ready!";
     }
@@ -54,33 +62,29 @@ public class ABSearch implements Callable<String> {
     
     
     //added depth limit to do an iterative deepening approach
-    public Move ABSearchAlgo(int depthLimit) {
+    public Move ABSearchAlgo(int depthLimit) throws InterruptedException {
         GameNode node = new GameNode(board, true);
         Move ans;
         
         Val v = new Val(maxv(node, -1000, 1000, 0, depthLimit));
         //v.node.print();
         //System.out.println(v);
-        node.expand();
+        //node.expand();
         LinkedHashMap<GameNode, Move> moves = node.getChildren();
+        //v.node.print();
         ans = moves.get(v.node);
-        //System.out.println("attempting to loop...");
-        /*for (GameNode child : moves.keySet()) {
-            //System.out.println("Checking child");
-            if (ai.eval(child) == v) {
-                //System.out.println("match found!");
-                ans = new Move(moves.get(child));
-                break;
-            }
-        }*/
 
-        depth = v.v;
+        //depth = v.v;
         //ans.print();
         return ans;
     }
     
     //added d to keep track of current depth
-    private Val maxv(GameNode node, int a, int b, int d, int depthLimit) {
+    private Val maxv(GameNode node, int a, int b, int d, int depthLimit) throws InterruptedException {
+        if (Thread.interrupted()) {
+            throw new InterruptedException();
+        }
+        depth = d;
         if (ai.isTerminal(node) || d == depthLimit){
             return new Val(ai.eval(node), node);
         }
@@ -89,11 +93,14 @@ public class ABSearch implements Callable<String> {
         //if node is not expanded, expand
         if (node.getChildren().isEmpty()) {
             node.expand();
+            //node.print();
+            totalNodes += node.getChildren().size();
         }
         LinkedHashMap<GameNode, Move> children = node.getChildren();
         for (GameNode child : children.keySet()){
             v = new Val(max(v.v, minv(child, a, b, d + 1, depthLimit).v), child);
             if (v.v >= b) {
+                ++maxPrunes;
                 return v;
             }
             a = max(a, v.v);
@@ -102,7 +109,11 @@ public class ABSearch implements Callable<String> {
     }
     
     //added d to keep track of current depth
-    private Val minv(GameNode node, int a, int b, int d, int depthLimit) {
+    private Val minv(GameNode node, int a, int b, int d, int depthLimit) throws InterruptedException {
+        if (Thread.interrupted()) {
+            throw new InterruptedException();
+        }
+        depth = d;
         if (ai.isTerminal(node) || d == depthLimit){
             return new Val(ai.eval(node), node);
         }
@@ -111,15 +122,18 @@ public class ABSearch implements Callable<String> {
         //if node is not expanded, expand
         if (node.getChildren().isEmpty()) {
             node.expand();
+            //node.print();
+            totalNodes += node.getChildren().size();
         }
         LinkedHashMap<GameNode, Move> children = node.getChildren();
         for (GameNode child : children.keySet()){
             //v.v = min(v.v, maxv(child, a, b, d + 1, depthLimit).v);
             v = new Val(min(v.v, maxv(child, a, b, d + 1, depthLimit).v), child);
-            if (v.v >= b) {
+            if (v.v <= a) {
+                ++minPrunes;
                 return v;
             }
-            a = min(a, v.v);
+            b = min(b, v.v);
         }
         return v;
     }

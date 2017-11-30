@@ -5,17 +5,13 @@
  */
 package minicamelot;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
@@ -28,7 +24,8 @@ public class PlayerAI {
         difficulty = diff;
         depth = 0;
         nodes = 0;
-        prunes = 0;
+        maxPrunes = 0;
+        minPrunes = 0;
         time = 0;
     }
     
@@ -40,7 +37,7 @@ public class PlayerAI {
 
         try {
             System.out.println("Started..");
-            System.out.println(future.get(3, TimeUnit.SECONDS));
+            System.out.println(future.get(10, TimeUnit.SECONDS));
             System.out.println("Finished!");
         } catch (TimeoutException e) {
             future.cancel(true);
@@ -49,7 +46,10 @@ public class PlayerAI {
 
         executor.shutdownNow();
         
-        System.out.println(algo.getDepth()); //not actually depth yet
+        System.out.println("max depth: " + depth); //not actually depth yet
+        System.out.println("Total nodes generated: " + nodes);
+        System.out.println("Total max prunes: " + maxPrunes);
+        System.out.println("Total min prunes: " + minPrunes);
         algo.getMove().print();
         return algo.getMove();
     }
@@ -74,8 +74,8 @@ public class PlayerAI {
     
     
     public boolean isTerminal(GameNode node) {
-        node.expand();
-        if (node.getChildren().isEmpty()){
+        //node.expand();
+        if (node.countPieces() == 0) {
             return true;
         }
         return node.getBoard().checkVictory() != -1;
@@ -89,14 +89,30 @@ public class PlayerAI {
         for (int row = 0; row < Constants.ROWS; ++row) {
             for (int col = 0; col < Constants.COLS; ++col) {
                 if (b.get(row, col) == Constants.BLACK) {
-                    ++black;
+                    black += Constants.ROWS - row - 1;
                 }
                 else if (b.get(row, col) == Constants.WHITE) {
-                    ++white;
+                    white += row;
                 }
             }
         }
         return black - white;
+    }
+    
+    public void setDepth(int newDepth) {
+        depth = newDepth;
+    }
+    
+    public void setNodes(int newNodes) {
+        nodes = newNodes;
+    }
+    
+    public void setMaxPrunes(int prunes) {
+        maxPrunes = prunes;
+    }
+    
+    public void setMinPrunes(int prunes) {
+        minPrunes = prunes;
     }
     
     
@@ -114,7 +130,8 @@ public class PlayerAI {
     private int difficulty;
     private int depth;
     private int nodes;
-    private int prunes;
+    private int maxPrunes;
+    private int minPrunes;
     private double time;
     
 }

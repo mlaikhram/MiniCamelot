@@ -17,6 +17,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -46,7 +48,12 @@ public class BoardGUI extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 aiTimer.stop();
-                aiMove();
+                try {
+                    aiMove();
+                } catch (Exception ex) {
+                    System.out.println("AI exploded");
+                    Logger.getLogger(BoardGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         tiles = new ArrayList<>(Constants.ROWS);
@@ -116,7 +123,7 @@ public class BoardGUI extends JPanel {
     }
     
     //allows ai to make a move
-    public void aiMove() {
+    public void aiMove() throws Exception {
         
         //use alpha-beta search to choose a move
         Move aiMove = ai.calcBestMove(board);
