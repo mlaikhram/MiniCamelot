@@ -43,6 +43,7 @@ public class BoardGUI extends JPanel {
         //initialize members
         board = new Board(b);
         ai = new PlayerAI(3);
+        aiMove = null;
         isPlayerTurn = true;
         canChain = false;
         chain = new LinkedList<>();
@@ -53,6 +54,18 @@ public class BoardGUI extends JPanel {
                 aiTimer.stop();
                 try {
                     aiMove();
+                } catch (Exception ex) {
+                    System.out.println("AI exploded");
+                    Logger.getLogger(BoardGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        chainTimer = new Timer(500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                chainTimer.stop();
+                try {
+                    aiChainMove();
                 } catch (Exception ex) {
                     System.out.println("AI exploded");
                     Logger.getLogger(BoardGUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -156,8 +169,9 @@ public class BoardGUI extends JPanel {
     public void aiMove() throws Exception {
         
         //use alpha-beta search to choose a move
-        Move aiMove = ai.calcBestMove(board);
+        aiMove = ai.calcBestMove(board);
         
+        chainTimer.start();
         //calculate destination tile for selected piece
         selectedPiece = aiMove.piece;
         Cor dest = firstOpen(aiMove.piece, aiMove.dir);
@@ -169,6 +183,30 @@ public class BoardGUI extends JPanel {
         
         System.out.println("Current board value: " + ai.eval(new GameNode(board, false)));
         
+        repaint();
+        revalidate();
+    }
+    
+    //allows ai to chain moves together and show it visually
+    public void aiChainMove() throws Exception {
+        //calculate destination tile for selected piece
+        selectedPiece = aiMove.piece;
+        Cor dest = firstOpen(aiMove.piece, aiMove.dir);
+
+        //update the board
+        board.doMove(aiMove);
+        moveSelectedPiece(dest);
+        
+        //if there is a chain move, then repeat
+        aiMove = aiMove.chain;
+        if (aiMove != null) {
+            chainTimer.start();
+        }
+        //otherwise end the ai turn
+        else {
+            System.out.println("Current board value: " + ai.eval(new GameNode(board, false)));
+            isPlayerTurn = true;
+        }
         repaint();
         revalidate();
     }
@@ -324,18 +362,20 @@ public class BoardGUI extends JPanel {
         jf.setResizable(false);
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        BoardGUI board = new BoardGUI(new Board(1));
+        BoardGUI board = new BoardGUI(new Board());
         jf.add(board);
         jf.setVisible(true);
     }
     
     private Board board;
     private PlayerAI ai;
+    private Move aiMove;
     private boolean isPlayerTurn;
     private boolean canChain;
     private LinkedList<Cor> chain; //keeps track of tiles in the current canter chain
     private boolean gameOver;
     private Timer aiTimer;
+    private Timer chainTimer;
     private ArrayList<ArrayList<JLabel>> tiles;
     private Cor selectedPiece;
     private HashMap<Cor, Move> validMoves;

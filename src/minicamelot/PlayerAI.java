@@ -105,10 +105,10 @@ public class PlayerAI {
             for (int col = 0; col < Constants.COLS; ++col) {
                 if (b.get(row, col) == Constants.BLACK) {
                     int dist = Constants.ROWS - row - 1;
-                    black += dist;
+                    black += 20 + dist;
                 }
                 else if (b.get(row, col) == Constants.WHITE) {
-                    white += row;
+                    white += 20 + row;
                 }
             }
         }

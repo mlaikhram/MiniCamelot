@@ -63,12 +63,12 @@ public class GameNode {
         
         //loop over all possible moves and create nodes for each
         for (Cor piece : pieces) {
-            LinkedList<Move> moves = board.calcMoves(piece);
+            LinkedList<Move> moves = board.calcAllMoves(piece);
             for (Move move : moves) {
                 /* FUTURE: Calc all chain moves for each move 
                  */                
                 Board b = new Board(board);
-                b.doMove(move);
+                b.doFullMove(move);
                 GameNode child = new GameNode(b, !isMax);
                 children.put(child, move);
             }

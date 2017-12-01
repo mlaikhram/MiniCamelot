@@ -43,17 +43,27 @@ public class Board {
                 if ((row < 3 || row > 10) && (col == 0 || col == Constants.COLS - 1)) board[row][col] = row > Constants.ROWS / 2 ? -1 : -2;
                 else if ((row < 2 || row > 11) && (col == 1 || col == 6)) board[row][col] = row > Constants.ROWS / 2 ? -1 : -2;
                 else if ((row < 1 || row > 12) && (col == 2 || col == 5)) board[row][col] = row > Constants.ROWS / 2 ? -1 : -2;        
-                else if (row == 4 && col > 1 && col < 6) board[row][col] = Constants.WHITE;
-                else if (row == 5 && col > 2 && col < 5) board[row][col] = Constants.WHITE;
-                else if (row == 8 && col > 2 && col < 5) board[row][col] = Constants.BLACK;
-                else if (row == 9 && col > 1 && col < 6) board[row][col] = Constants.BLACK;               
+                //else if (row == 4 && col > 1 && col < 6) board[row][col] = Constants.WHITE;
+                //else if (row == 5 && col > 2 && col < 5) board[row][col] = Constants.WHITE;
+                //else if (row == 8 && col > 2 && col < 5) board[row][col] = Constants.BLACK;
+                //else if (row == 9 && col > 1 && col < 6) board[row][col] = Constants.BLACK;               
             }
         }
         //board[8][4] = 0;
         //board[7][4] = Constants.BLACK;
         
-        board[4][3] = 0;
+        //board[4][3] = 0;
+        //board[3][3] = Constants.WHITE;
+        
         board[3][3] = Constants.WHITE;
+        board[3][4] = Constants.WHITE;
+        board[4][4] = Constants.WHITE;
+        board[4][2] = Constants.WHITE;
+        board[5][3] = Constants.WHITE;
+        board[6][3] = Constants.WHITE;
+        board[7][3] = Constants.BLACK;
+        board[8][3] = Constants.BLACK;
+        
     }
     
     public Board(Board b) {
@@ -117,8 +127,59 @@ public class Board {
                 }
             }
         }
-        
         mustCapture = mustCapture(opposite(pColor));
+    }
+    
+    
+    //applies a given move to the board, including all chained parts
+    //this is used for the absearch
+    public void doFullMove(Move m) {
+        //check to see if move contains a valid piece
+        if (!isValid(m.piece) || board[m.piece.y][m.piece.x] == 0) return;
+
+        //record the color of the current piece
+        int pColor = board[m.piece.y][m.piece.x];
+
+        Cor newPos = new Cor(m.piece.add(m.dir));
+
+        //check for moving out of bounds
+        if (!isValid(newPos)) return;
+
+        //if space is not occupied, move to it
+        if (board[newPos.y][newPos.x] == 0) {
+            board[m.piece.y][m.piece.x] = 0;
+            board[newPos.y][newPos.x] = pColor;
+        }
+
+        //otherwise try moving one space beyond that point
+        else {
+
+            //record the piece in the adjacent tile
+            int hopColor = board[newPos.y][newPos.x];
+
+            //keep track of and increment the newPos
+            Cor hopPos = new Cor(newPos);
+            newPos = newPos.add(m.dir);
+
+            //check for hopping out of bounds
+            if (!isValid(newPos)) return;
+
+            if (board[newPos.y][newPos.x] == 0) {
+                board[m.piece.y][m.piece.x] = 0;
+                board[newPos.y][newPos.x] = pColor;
+
+                //check to see if it was a capturing move
+                if (hopColor != pColor) {
+                    board[hopPos.y][hopPos.x] = 0;
+                }
+            }
+        }
+        if (m.chain != null) {
+            doFullMove(m.chain);
+        }
+        else {
+            mustCapture = mustCapture(opposite(pColor));
+        }
     }
     
     //calculates the legal moves a given piece can do
@@ -139,7 +200,104 @@ public class Board {
             ans.addAll(calcCanterMoves(piece));
             return ans;
         }
-    }      
+    }    
+    
+    //calculates the legal moves including every possible chain combination
+    public LinkedList<Move> calcAllMoves(Cor piece) {
+        LinkedList<Move> ans = new LinkedList<>();
+        
+        //check to see if piece is valid
+        if (!isValid(piece) || board[piece.y][piece.x] == 0) return ans;
+        
+        //if a capture move exists, then you must capture
+        if (mustCapture) {
+            LinkedList<Move> captureMoves = calcCaptureMoves(piece);
+            
+            //find all chain moves for each capture move
+            for (Move m : captureMoves) {
+                
+                //create board with the current move
+                Board b = new Board(this);
+                b.doMove(m);
+                
+                //calculate destination tile
+                Cor dest = m.piece;
+                dest = dest.add(m.dir);
+                dest = dest.add(m.dir);
+                
+                calcChainsRecurse(b, m, dest, new LinkedList<Cor>(), ans);                
+            }
+            //ans.addAll(calcCaptureMoves(piece));
+            return ans;
+        }
+        //otherwise you can do a plain move or canter move
+        else {
+            ans.addAll(calcPlainMoves(piece));
+            //ans.addAll(calcCanterMoves(piece));
+            
+            
+            LinkedList<Move> canterMoves = calcCanterMoves(piece);
+            
+            //find all chain moves for each capture move
+            for (Move m : canterMoves) {
+                
+                //create board with the current move
+                Board b = new Board(this);
+                b.doMove(m);
+                
+                //calculate destination tile
+                Cor dest = m.piece;
+                dest = dest.add(m.dir);
+                dest = dest.add(m.dir);
+                
+                calcChainsRecurse(b, m, dest, new LinkedList<Cor>(Arrays.asList(piece)), ans);
+            }
+            return ans;
+        }
+    }
+    
+    //recursively store all chain moves in moves
+    private void calcChainsRecurse(Board b, Move m, Cor piece, LinkedList<Cor> prev, LinkedList<Move> moves) {
+        LinkedList<Move> chains = b.calcSingleChainMoves(piece, prev);
+        
+        //if there are no chain moves to do, add the current move in and return
+        if (chains.isEmpty()) {
+            moves.add(new Move(m));
+            return;
+        }
+        
+        LinkedList<Move> captureMoves = b.calcCaptureMoves(piece);
+        
+        //loop over all chain moves and recursively add them to moves
+        for (Move c : chains) {
+            //if the chain move is a stationary move, then just add the current move
+            if (c.dir.equals(Constants.X)) {
+                moves.add(new Move(m));
+            }
+            else {
+                LinkedList<Cor> prevVals = new LinkedList<>(prev);
+                //add move to prevList
+                prevVals.add(new Cor(piece));
+                //if this is a capture move, clear the prev list
+                if (captureMoves.contains(c)) {
+                    prevVals.clear();
+                }
+                
+                //create board with the current move
+                Board newboard = new Board(b);
+                newboard.doMove(c);
+                
+                //calculate destination tile
+                Cor dest = c.piece;
+                dest = dest.add(c.dir);
+                dest = dest.add(c.dir);
+                
+                Move move = new Move(m, c);
+                
+                calcChainsRecurse(newboard, move, dest, prevVals, moves);
+            }
+        }
+    }
     
     //calculates the legal plain moves a piece can do
     public LinkedList<Move> calcPlainMoves(Cor piece) {
@@ -355,15 +513,18 @@ public class Board {
     private boolean mustCapture; //determines if the pieces must make a capturing move when calculating valid moves
     
     public static void main(String[] args) {
-        Board board = new Board();
+        Board board = new Board(1);
         board.print();
-        LinkedList<Move> moves = board.calcMoves(new Cor(2, 4));
+        LinkedList<Move> moves = board.calcAllMoves(new Cor(4, 3));
         System.out.println("Valid Moves: ");
         for (Move m : moves) {
             m.print();
         }
         System.out.println();
         
+        board.doMove(moves.get(7));
+        board.print();
+        /*
         for (int i = 0; i < 4; ++i) {
             board.doMove(new Move(new Cor(2, 4 + i), new Cor(Constants.S)));
             board.print();

@@ -37,6 +37,21 @@ public class Move {
             chain = new Move(m.chain);
         }
     }
+    //creates a Move by linking the two moves together
+    public Move(Move m1, Move m2) {
+        piece = new Cor(m1.piece);
+        dir = new Cor(m1.dir);
+        if (m1.chain != null) {
+            chain = new Move(m1.chain);
+        }
+        
+        //get to the end of the chain and link m2 to it
+        Move m = this;
+        while (m.chain != null) {
+            m = m.chain;
+        }
+        m.chain = new Move(m2);
+    }
     
     //implementation for hashmap
     @Override
@@ -92,7 +107,12 @@ public class Move {
         Move m = new Move(new Cor(4, 5), Constants.N);
         m.chain = new Move (new Cor(4, 4), Constants.SW);
         m.chain.chain = new Move(new Cor(3, 5), Constants.S);
-        m.print();
+        
+        Move m2 = new Move(new Cor(3, 6), Constants.E);
+        m2.chain = new Move(new Cor(4, 6), Constants.NE);
+        
+        Move m3 = new Move(m, m2);
+        m3.print();
     }
     
     

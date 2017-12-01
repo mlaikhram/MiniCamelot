@@ -29,7 +29,7 @@ public class ABSearch implements Callable<String> {
     //do an iterative deepening approach to have a backup answer in the even that time runs out
     @Override
     public String call() {
-        int depthLimit = 3;
+        int depthLimit = 1;
         while (0 == 0) {
             try { 
                 bestMove = ABSearchAlgo(depthLimit);
