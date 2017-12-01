@@ -157,7 +157,7 @@ public class BoardGUI extends JPanel {
         
         //use alpha-beta search to choose a move
         Move aiMove = ai.calcBestMove(board);
-            
+        
         //calculate destination tile for selected piece
         selectedPiece = aiMove.piece;
         Cor dest = firstOpen(aiMove.piece, aiMove.dir);

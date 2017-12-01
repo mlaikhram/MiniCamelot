@@ -18,16 +18,24 @@ public class Move {
     public Move() {
         piece = new Cor(0, 0);
         dir = new Cor(0, 0);
+        chain = null;
     }
     
     public Move(Cor _piece, Cor _dir) {
         piece = _piece;
         dir = _dir;
+        chain = null;
     }
     
     public Move(Move m) {
         piece = new Cor(m.piece);
         dir = new Cor(m.dir);
+        if (m.chain == null) {
+            chain = null;
+        }
+        else {
+            chain = new Move(m.chain);
+        }
     }
     
     //implementation for hashmap
@@ -59,16 +67,36 @@ public class Move {
     
     
     public void print() {
-        String d = "X";
+
         ArrayList<String> directions = new ArrayList<>(Arrays.asList("S", "N", "E", "W", "SE", "SW", "NE", "NW"));
-        for (int i = 0; i < Constants.compass.size(); ++i) {
-            if (Constants.compass.get(i).equals(dir)) {
-                d = directions.get(i);
+        
+        System.out.print("piece: (" + piece.x + ", " + piece.y + ")");
+        
+        Move c = this;
+        while (c != null) {
+            String d = "X";
+            for (int i = 0; i < Constants.compass.size(); ++i) {
+                if (Constants.compass.get(i).equals(c.dir)) {
+                    d = directions.get(i);
+                    break;
+                }
             }
+            System.out.print(" " + d);
+            c = c.chain;
         }
-        System.out.println("piece: (" + piece.x + ", " + piece.y + ") " + d);
+        System.out.println();
     }
+    
+    
+    public static void main(String[] args) {
+        Move m = new Move(new Cor(4, 5), Constants.N);
+        m.chain = new Move (new Cor(4, 4), Constants.SW);
+        m.chain.chain = new Move(new Cor(3, 5), Constants.S);
+        m.print();
+    }
+    
     
     public Cor piece; //the piece to be moved
     public Cor dir; //the direction to move the piece
+    public Move chain;
 }
