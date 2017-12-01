@@ -59,7 +59,7 @@ public class Move {
     
     
     public void print() {
-        String d = "?";
+        String d = "X";
         ArrayList<String> directions = new ArrayList<>(Arrays.asList("S", "N", "E", "W", "SE", "SW", "NE", "NW"));
         for (int i = 0; i < Constants.compass.size(); ++i) {
             if (Constants.compass.get(i).equals(dir)) {

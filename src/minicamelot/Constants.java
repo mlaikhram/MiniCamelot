@@ -25,6 +25,7 @@ public class Constants {
     public static final int WHITE = 2;
     
     //compass directions (unit vectors)
+    public static final Cor X = new Cor(0, 0);
     public static final Cor S = new Cor(0, 1);
     public static final Cor N = new Cor(0, -1);
     public static final Cor E = new Cor(1, 0);

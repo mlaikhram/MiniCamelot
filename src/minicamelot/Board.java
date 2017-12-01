@@ -43,15 +43,17 @@ public class Board {
                 if ((row < 3 || row > 10) && (col == 0 || col == Constants.COLS - 1)) board[row][col] = row > Constants.ROWS / 2 ? -1 : -2;
                 else if ((row < 2 || row > 11) && (col == 1 || col == 6)) board[row][col] = row > Constants.ROWS / 2 ? -1 : -2;
                 else if ((row < 1 || row > 12) && (col == 2 || col == 5)) board[row][col] = row > Constants.ROWS / 2 ? -1 : -2;        
+                else if (row == 4 && col > 1 && col < 6) board[row][col] = Constants.WHITE;
+                else if (row == 5 && col > 2 && col < 5) board[row][col] = Constants.WHITE;
+                else if (row == 8 && col > 2 && col < 5) board[row][col] = Constants.BLACK;
+                else if (row == 9 && col > 1 && col < 6) board[row][col] = Constants.BLACK;               
             }
         }
+        //board[8][4] = 0;
+        //board[7][4] = Constants.BLACK;
         
-        board[6][4] = Constants.WHITE;
-        board[6][5] = Constants.WHITE;
-        board[6][7] = Constants.WHITE;
-        board[8][0] = Constants.BLACK;
-        board[8][3] = Constants.BLACK;
-        board[8][4] = Constants.BLACK;
+        board[4][3] = 0;
+        board[3][3] = Constants.WHITE;
     }
     
     public Board(Board b) {
@@ -140,7 +142,7 @@ public class Board {
     }      
     
     //calculates the legal plain moves a piece can do
-    private LinkedList<Move> calcPlainMoves(Cor piece) {
+    public LinkedList<Move> calcPlainMoves(Cor piece) {
         LinkedList<Move> ans = new LinkedList<>();
         
         //check to see if piece is valid
@@ -161,7 +163,7 @@ public class Board {
     }
     
     //calculates the legal canter moves a piece can do
-    private LinkedList<Move> calcCanterMoves(Cor piece) {
+    public LinkedList<Move> calcCanterMoves(Cor piece) {
         LinkedList<Move> ans = new LinkedList<>();
         
         //check to see if piece is valid
@@ -191,7 +193,7 @@ public class Board {
     }
     
     //calculates the legal capture moves a piece can do
-    private LinkedList<Move> calcCaptureMoves(Cor piece) {
+    public LinkedList<Move> calcCaptureMoves(Cor piece) {
         LinkedList<Move> ans = new LinkedList<>();
         
         //check to see if piece is valid
@@ -210,6 +212,36 @@ public class Board {
                 ans.add(new Move(piece, dir));
             }
         }  
+        return ans;
+    }
+    
+    //calculates the legal single hop chain moves based on previous tilse within the chain and whether or not there is a capture move
+    public LinkedList<Move> calcSingleChainMoves(Cor piece, LinkedList<Cor> pastTiles) {
+        LinkedList<Move> ans = new LinkedList<>();
+        
+        //check to see if piece is valid
+        if (!isValid(piece) || board[piece.y][piece.x] == 0) return ans;
+        
+        //check if there are capture moves
+        ans.addAll(calcCaptureMoves(piece));
+        if (!ans.isEmpty()) {
+            return ans;
+        }
+        //get the canter moves that go to tiles you haven't been to in this chain
+        LinkedList<Move> canters = calcCanterMoves(piece);
+        for (Move m : canters) {
+            Cor dest = new Cor(piece);
+            dest = dest.add(m.dir);
+            dest = dest.add(m.dir);
+            
+            if (!pastTiles.contains(dest)) {
+                ans.add(m);
+            }
+        }
+        //if it's possible to canter you can choose to stop the chain at this point
+        if (!ans.isEmpty()) {
+            ans.add(new Move(piece, Constants.X));
+        }
         return ans;
     }
     

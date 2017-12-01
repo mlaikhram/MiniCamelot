@@ -44,6 +44,8 @@ public class BoardGUI extends JPanel {
         board = new Board(b);
         ai = new PlayerAI(3);
         isPlayerTurn = true;
+        canChain = false;
+        chain = new LinkedList<>();
         gameOver = false;
         aiTimer = new Timer(1, new ActionListener() {
             @Override
@@ -104,22 +106,46 @@ public class BoardGUI extends JPanel {
         
         if (!isPlayerTurn || gameOver) return;
         
-        //if a valid piece is clicked on
-        if (board.get(tile) == Constants.WHITE) {
+        //if a valid piece is clicked on while you are not trying to chain
+        if (!canChain && board.get(tile) == Constants.WHITE) {
             updateSelectedPiece(tile);
         }
         //if a valid move is selected
         else if (validMoves.containsKey(tile)) {
-            board.doMove(validMoves.get(tile));
-            moveSelectedPiece(tile);
-            isPlayerTurn = false;
             
-            if (!gameOver) {
-                aiTimer.start();
+            Move m = new Move(validMoves.get(tile));
+            LinkedList<Move> captureMoves = board.calcCaptureMoves(selectedPiece);
+            LinkedList<Move> chainable = board.calcCanterMoves(selectedPiece);
+            chainable.addAll(captureMoves);
+            
+            //do the move and update the board
+            board.doMove(m);
+            moveSelectedPiece(tile);
+            
+            //if player can chain from this move, check for chain moves
+            if (!m.dir.equals(Constants.X) && chainable.contains(m)) {
+                //if the move you just made was a capture move, reset the chain
+                if (captureMoves.contains(m)){
+                    chain.clear();
+                }
+                updateChainMoves(tile);
+            }
+            else {
+                canChain = false;
+            }
+            
+            //if player can't make a chain move, let the ai go
+            if (!canChain) {
+                isPlayerTurn = false;
+                chain.clear();
+                
+                if (!gameOver) {
+                    aiTimer.start();
+                }
             }
         }
-        //if the player clicked elsewhere, then unclick the currentPiece
-        else {
+        //if the player clicked elsewhere and is not in a chain, then unclick the currentPiece
+        else if (!canChain) {
             updateSelectedPiece(null);
         }
         repaint();
@@ -196,6 +222,9 @@ public class BoardGUI extends JPanel {
         Cor mid = destPos.mid(selectedPiece);
         tiles.get(mid.y).get(mid.x).setIcon(imgs.get("" + board.get(mid)));
         
+        //add selected piece's cors to the chain list
+        chain.add(selectedPiece);
+        
         //reset selected piece
         selectedPiece = null;
         
@@ -203,9 +232,37 @@ public class BoardGUI extends JPanel {
         checkForGameOver();
     }
     
+    //updates board to display chain moves, if any
+    public void updateChainMoves(Cor piece) {
+        LinkedList<Move> chainMoves = board.calcSingleChainMoves(piece, chain);
+        
+        //if there are no chain moves, exit
+        if (chainMoves.isEmpty()) {
+            chain.clear();
+            canChain = false;
+            return;
+        }
+        canChain = true;
+        
+        //set new piece to selected and update sprite
+        selectedPiece = new Cor(piece);
+        tiles.get(piece.y).get(piece.x).setIcon(imgs.get("" + board.get(piece) + "selected"));
+        
+        //update valid moves
+        for (Move m : chainMoves) {
+            Cor dest = firstOpen(piece, m.dir);
+            validMoves.put(dest, m);
+            tiles.get(dest.y).get(dest.x).setIcon(imgs.get("" + board.get(dest) + "valid"));
+        }
+    }
+    
     //returns the cors to the first open tile in the direction dir
     //returns start if no open tile is found
     private Cor firstOpen(Cor start, Cor dir) {
+        //if the dir is 0,0 then return current pos
+        if (dir.equals(Constants.X)) {
+            return start;
+        }
         Cor pos = new Cor(start);
         while (board.isValid(pos)) {
             pos = pos.add(dir);
@@ -267,7 +324,7 @@ public class BoardGUI extends JPanel {
         jf.setResizable(false);
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        BoardGUI board = new BoardGUI(new Board());
+        BoardGUI board = new BoardGUI(new Board(1));
         jf.add(board);
         jf.setVisible(true);
     }
@@ -275,6 +332,8 @@ public class BoardGUI extends JPanel {
     private Board board;
     private PlayerAI ai;
     private boolean isPlayerTurn;
+    private boolean canChain;
+    private LinkedList<Cor> chain; //keeps track of tiles in the current canter chain
     private boolean gameOver;
     private Timer aiTimer;
     private ArrayList<ArrayList<JLabel>> tiles;
