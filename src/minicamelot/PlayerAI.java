@@ -5,8 +5,6 @@
  */
 package minicamelot;
 
-import java.util.LinkedList;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -34,28 +32,37 @@ public class PlayerAI {
     public Move calcBestMove(Board b) throws Exception {
         ABSearch algo = new ABSearch(this, b);
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<String> future = executor.submit(algo);
+        Future<?> future = executor.submit(algo);
 
         try {
-            System.out.println("Started..");
             System.out.println(future.get(10, TimeUnit.SECONDS));
-            System.out.println("Finished!");
         } catch (TimeoutException e) {
             future.cancel(true);
-            System.out.println("Terminated!");
         }
 
         executor.shutdownNow();
-        
-        System.out.println("Move value: " + val);
-        System.out.println("Max depth: " + depth);
-        System.out.println("Total nodes generated: " + nodes);
-        System.out.println("Total max prunes: " + maxPrunes);
-        System.out.println("Total min prunes: " + minPrunes);
-        algo.getMove().print();
+
         return algo.getMove();
     }
     
+    //flavor text based on how good the searched move is
+    public String getMood() {
+        if (val < 0) {
+            return "This does not look good...";
+        }
+        else if (val > 0) {
+            return "I can do this with my eyes closed!";
+        }
+        return "hmm...";
+    }
+    
+    
+    public String getStats() {
+        return  "Max depth: " + depth + "\n" + 
+                "Total nodes generated: " + nodes + "\n" + 
+                "Total max prunes: " + maxPrunes + "\n" + 
+                "Total min prunes: " + minPrunes;
+    }
     //Random Search Algorithm
     /*public Move RandomSearch(Board b) {
         LinkedList<Move> moves = new LinkedList<>();
@@ -143,7 +150,7 @@ public class PlayerAI {
         jf.setResizable(false);
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        BoardGUI board = new BoardGUI(new Board());
+        BoardGUI board = new BoardGUI(null, new Board());
         jf.add(board);
         jf.setVisible(true);
     }

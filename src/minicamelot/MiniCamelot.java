@@ -5,17 +5,51 @@
  */
 package minicamelot;
 
+import java.awt.GridLayout;
+import javax.swing.JFrame;
+
 /**
  *
  * @author Matthew Laikhram
  */
-public class MiniCamelot {
+public class MiniCamelot extends JFrame {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
+    public MiniCamelot() {
+        
+        setTitle("Mini Camelot");
+        setLayout(new GridLayout(1, 2));
+        setSize(800, 700);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        board = new BoardGUI(this, new Board());
+        add(board);
+        
+        player = new PlayerPanel(this);
+        add(player);
     }
+    
+    //ends the game and brings back the new game panel
+    public void surrender() {
+        System.out.println("I surrender!");
+    }
+    
+    //set text on the player panel
+    public void setText(String text) {
+        player.setText(text);
+    }
+    
+    //get text on the player panel
+    public String getText() {
+        return player.getText();
+    }
+    
+    public static void main(String[] args) {
+        MiniCamelot mc = new MiniCamelot();
+        mc.setVisible(true);
+    }
+    
+    private BoardGUI board;
+    private PlayerPanel player;
     
 }

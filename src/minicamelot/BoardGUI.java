@@ -34,13 +34,14 @@ import javax.swing.Timer;
 public class BoardGUI extends JPanel {
     
     //create a new BoardGUI using the given board
-    public BoardGUI(Board b) {
+    public BoardGUI(MiniCamelot p, Board b) {
         
         //initialize to grid with size
         setLayout(new GridLayout(Constants.ROWS, Constants.COLS));
         setSize(400, 700);
         
         //initialize members
+        parent = p;
         board = new Board(b);
         ai = new PlayerAI(3);
         aiMove = null;
@@ -153,6 +154,9 @@ public class BoardGUI extends JPanel {
                 chain.clear();
                 
                 if (!gameOver) {
+                    if (parent != null) {
+                        parent.setText("AI is thinking...");
+                    }
                     aiTimer.start();
                 }
             }
@@ -170,10 +174,12 @@ public class BoardGUI extends JPanel {
         
         //use alpha-beta search to choose a move
         aiMove = ai.calcBestMove(board);
-        
+        if (parent != null) {
+            parent.setText(ai.getMood() + "\n" + ai.getStats());
+        }
         chainTimer.start();
         //calculate destination tile for selected piece
-        selectedPiece = aiMove.piece;
+        /*selectedPiece = aiMove.piece;
         Cor dest = firstOpen(aiMove.piece, aiMove.dir);
 
         //update the board
@@ -184,7 +190,7 @@ public class BoardGUI extends JPanel {
         System.out.println("Current board value: " + ai.eval(new GameNode(board, false)));
         
         repaint();
-        revalidate();
+        revalidate();*/
     }
     
     //allows ai to chain moves together and show it visually
@@ -204,7 +210,6 @@ public class BoardGUI extends JPanel {
         }
         //otherwise end the ai turn
         else {
-            System.out.println("Current board value: " + ai.eval(new GameNode(board, false)));
             isPlayerTurn = true;
         }
         repaint();
@@ -317,17 +322,19 @@ public class BoardGUI extends JPanel {
         if (gameState == -1) {
             return;
         }
-        if (gameState == 0) {
-            System.out.println("It's a draw!");
-        }
-        else if (gameState == Constants.BLACK) {
-            System.out.println("You lose!");
-        }
-        else if (gameState == Constants.WHITE) {
-            System.out.println("You win!");
-        }
-        else {
-            return;
+        if (parent != null) {
+            if (gameState == 0) {
+                parent.setText("It's a draw!\n" + parent.getText());
+            }
+            else if (gameState == Constants.BLACK) {
+                parent.setText("You lose!\n" + parent.getText());
+            }
+            else if (gameState == Constants.WHITE) {
+                parent.setText("You win!\n" + parent.getText());
+            }
+            else {
+                return;
+            }
         }
         gameOver = true;
     }
@@ -362,11 +369,12 @@ public class BoardGUI extends JPanel {
         jf.setResizable(false);
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        BoardGUI board = new BoardGUI(new Board());
+        BoardGUI board = new BoardGUI(null, new Board());
         jf.add(board);
         jf.setVisible(true);
     }
     
+    private MiniCamelot parent;
     private Board board;
     private PlayerAI ai;
     private Move aiMove;
