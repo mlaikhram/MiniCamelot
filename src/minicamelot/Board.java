@@ -174,6 +174,7 @@ public class Board {
                 }
             }
         }
+        // check if there are chain moves to do
         if (m.chain != null) {
             doFullMove(m.chain);
         }
@@ -182,7 +183,7 @@ public class Board {
         }
     }
     
-    //calculates the legal moves a given piece can do
+    //calculates the legal moves a given piece can do, ignoring chain moves
     public LinkedList<Move> calcMoves(Cor piece) {
         LinkedList<Move> ans = new LinkedList<>();
         
@@ -227,14 +228,11 @@ public class Board {
                 
                 calcChainsRecurse(b, m, dest, new LinkedList<Cor>(), ans);                
             }
-            //ans.addAll(calcCaptureMoves(piece));
             return ans;
         }
         //otherwise you can do a plain move or canter move
         else {
             ans.addAll(calcPlainMoves(piece));
-            //ans.addAll(calcCanterMoves(piece));
-            
             
             LinkedList<Move> canterMoves = calcCanterMoves(piece);
             
@@ -294,6 +292,7 @@ public class Board {
                 
                 Move move = new Move(m, c);
                 
+                //recurse
                 calcChainsRecurse(newboard, move, dest, prevVals, moves);
             }
         }
@@ -467,7 +466,7 @@ public class Board {
         System.out.println();
     }
     
-    //accessor
+    //accessors
     public int get(int row, int col) {
         if (!isValid(new Cor(col, row))){
             return row > Constants.ROWS / 2 ? -1 : -2;

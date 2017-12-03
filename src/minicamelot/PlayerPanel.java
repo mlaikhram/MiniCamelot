@@ -37,6 +37,7 @@ public class PlayerPanel extends JPanel {
         GridBagConstraints c = new GridBagConstraints();
         c.weightx = 1.0;
         
+        //text area
         c.gridx = 0;
         c.gridy = 0;
         c.fill = BOTH;
@@ -49,6 +50,7 @@ public class PlayerPanel extends JPanel {
         textLabel.setOpaque(true);
         add(textLabel, c);
         
+        //surrender button
         c.gridx = 0;
         c.gridy = 1;
         c.fill = BOTH;
