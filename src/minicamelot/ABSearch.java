@@ -104,7 +104,7 @@ public class ABSearch implements Callable<String> {
         if (Thread.interrupted()) {
             throw new InterruptedException();
         }
-        depth = max(depth, d);
+        depth = Constants.max(depth, d);
         if (ai.isTerminal(node) || d == depthLimit){
             return new Val(ai.eval(node), node);
         }
@@ -122,7 +122,7 @@ public class ABSearch implements Callable<String> {
                 ++maxPrunes;
                 return v;
             }
-            a = max(a, v.v);
+            a = Constants.max(a, v.v);
         }
         return v;
     }
@@ -132,7 +132,7 @@ public class ABSearch implements Callable<String> {
         if (Thread.interrupted()) {
             throw new InterruptedException();
         }
-        depth = max(depth, d);
+        depth = Constants.max(depth, d);
         if (ai.isTerminal(node) || d == depthLimit){
             return new Val(ai.eval(node), node);
         }
@@ -151,22 +151,12 @@ public class ABSearch implements Callable<String> {
                 ++minPrunes;
                 return v;
             }
-            b = min(b, v.v);
+            b = Constants.min(b, v.v);
         }
         return v;
     }
     
 
-    private int min(int a, int b) {
-        return a < b ? a : b;
-    }
-    
-    
-    private int max(int a, int b) {
-        return a > b ? a : b;
-    }
-    
-    
     private Val min(Val a, Val b) {
         return a.v < b.v ? a : b;
     }

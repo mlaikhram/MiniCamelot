@@ -36,6 +36,17 @@ public class Constants {
     public static final Cor NW = new Cor(-1, -1);
     public static final ArrayList<Cor> compass = new ArrayList<>(Arrays.asList(S, N, E, W, SE, SW, NE, NW));
     
+    
+    public static int min(int a, int b) {
+        return a < b ? a : b;
+    }
+    
+    
+    public static int max(int a, int b) {
+        return a > b ? a : b;
+    }
+    
+    
     //resizes image to given width/height
     public static BufferedImage resize(BufferedImage image, int width, int height) {
         BufferedImage bi = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);

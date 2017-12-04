@@ -89,20 +89,65 @@ public class PlayerAI {
         
         //count pieces for each player and make the value of each piece:
         //20 + distance to opposing castle
+        int ans = 0;
         int black = 0;
+        int blackTop1 = 8;
+        int blackTop2 = 8;
+        int blackBottom1 = -1;
+        int blackBottom2 = -1;
         int white = 0;
+        int whiteTop1 = 8;
+        int whiteTop2 = 8;
+        int whiteBottom1 = -1;
+        int whiteBottom2 = -1;
         for (int row = 0; row < Constants.ROWS; ++row) {
             for (int col = 0; col < Constants.COLS; ++col) {
                 if (b.get(row, col) == Constants.BLACK) {
                     int dist = Constants.ROWS - row - 1;
+                    if (blackTop1 != Constants.min(blackTop1, row)) {
+                        blackTop2 = Constants.min(blackTop1, blackTop2);
+                        blackTop1 = row;
+                    }
+                    else if (blackTop2 != Constants.min(blackTop2, row)) {
+                        blackTop2 = row;
+                    }
+                    if (blackBottom1 != Constants.max(blackBottom1, row)) {
+                        blackBottom2 = Constants.max(blackBottom1, blackBottom2);
+                        blackBottom1 = row;
+                    }
+                    else if (blackBottom2 != Constants.max(blackBottom2, row)) {
+                        blackBottom2 = row;
+                    }
                     black += 20 + dist;
                 }
                 else if (b.get(row, col) == Constants.WHITE) {
-                    white += 20 + row;
+                    int dist = row;
+                    if (whiteTop1 != Constants.min(whiteTop1, row)) {
+                        whiteTop2 = Constants.min(whiteTop1, whiteTop2);
+                        whiteTop1 = row;
+                    }
+                    else if (whiteTop2 != Constants.min(whiteTop2, row)) {
+                        whiteTop2 = row;
+                    }
+                    if (whiteBottom1 != Constants.max(whiteBottom1, row)) {
+                        whiteBottom2 = Constants.max(whiteBottom1, whiteBottom2);
+                        whiteBottom1 = row;
+                    }
+                    else if (whiteBottom2 != Constants.max(whiteBottom2, row)) {
+                        whiteBottom2 = row;
+                    }
+                    white += 20 + dist;
                 }
             }
         }
-        return black - white;
+        ans = black - white;
+        if (blackTop1 < whiteTop1 && blackTop2 < whiteTop2) {
+            ans += (Constants.ROWS - 1 - blackTop1) * 10 + (Constants.ROWS - 1 - blackTop2) * 10;
+        }
+        if (whiteBottom1 > blackBottom1 && whiteBottom2 < blackBottom1) {
+            ans -= whiteBottom1 * 10 + whiteBottom2 * 10;
+        }
+        return ans;
     }
     
     
