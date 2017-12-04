@@ -13,7 +13,6 @@ import java.util.concurrent.Callable;
  * @author Matthew Laikhram
  */
 public class ABSearch implements Callable<String> {
-//public class ABSearch implements Runnable {
 
     public ABSearch(PlayerAI _ai, Board b) {
         ai = _ai;
@@ -26,11 +25,27 @@ public class ABSearch implements Callable<String> {
         minPrunes = 0;
     }
     
-    //do an iterative deepening approach to have a backup answer in the even that time runs out
+    //do an iterative deepening approach to have a backup answer in the event that time runs out
     @Override
     public String call() {
+        
+        //limit depth based on difficulty of the ai
+        final int diff = ai.getDifficulty();
+        int maxDepth = -1;
+        switch (diff) {
+            case 0:
+                maxDepth = 2;
+                break;
+            case 1:
+                maxDepth = 3;
+                break;
+            default:
+                break;
+        }
+        
+        //run the algorithm as long as you have time, or until the maxDepth is reached
         int depthLimit = 1;
-        while (0 == 0) {
+        while (maxDepth < 0 || depthLimit < maxDepth) {
             try { 
                 bestMove = ABSearchAlgo(depthLimit);
 
@@ -40,7 +55,7 @@ public class ABSearch implements Callable<String> {
                 ai.setMaxPrunes(maxPrunes);
                 ai.setMinPrunes(minPrunes);
                 
-                //if the max depth has been passed by the depth limit, then finish
+                //if the max depth of the game tree has been passed by the depth limit, then finish
                 if (depth < depthLimit) {
                     break;
                 }
@@ -50,7 +65,7 @@ public class ABSearch implements Callable<String> {
                 break;
             }
         }
-        return "Ready!";
+        return "";
     }
     
     //class used in ABSearch to keep track of the best move
@@ -141,7 +156,7 @@ public class ABSearch implements Callable<String> {
         return v;
     }
     
-    
+
     private int min(int a, int b) {
         return a < b ? a : b;
     }
@@ -161,11 +176,10 @@ public class ABSearch implements Callable<String> {
         return a.v > b.v ? a : b;
     }
     
-    
+    //accessors
     public Move getMove() {
         return bestMove;
     }
-    
     
     public int getDepth() {
         return depth;
@@ -179,6 +193,5 @@ public class ABSearch implements Callable<String> {
     private int depth;
     private int totalNodes;
     private int maxPrunes;
-    private int minPrunes;
-    
+    private int minPrunes; 
 }

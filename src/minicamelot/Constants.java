@@ -45,5 +45,4 @@ public class Constants {
         g2d.dispose();
         return bi;
     }
-    
 }

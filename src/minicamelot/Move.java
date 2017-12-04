@@ -37,6 +37,7 @@ public class Move {
             chain = new Move(m.chain);
         }
     }
+    
     //creates a Move by linking the two moves together
     public Move(Move m1, Move m2) {
         piece = new Cor(m1.piece);
@@ -103,20 +104,7 @@ public class Move {
     }
     
     
-    public static void main(String[] args) {
-        Move m = new Move(new Cor(4, 5), Constants.N);
-        m.chain = new Move (new Cor(4, 4), Constants.SW);
-        m.chain.chain = new Move(new Cor(3, 5), Constants.S);
-        
-        Move m2 = new Move(new Cor(3, 6), Constants.E);
-        m2.chain = new Move(new Cor(4, 6), Constants.NE);
-        
-        Move m3 = new Move(m, m2);
-        m3.print();
-    }
-    
-    
     public Cor piece; //the piece to be moved
     public Cor dir; //the direction to move the piece
-    public Move chain;
+    public Move chain; //next move in the chain
 }

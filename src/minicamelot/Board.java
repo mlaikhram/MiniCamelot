@@ -5,7 +5,6 @@
  */
 package minicamelot;
 
-import static java.lang.Math.abs; //remove import after done testing
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -66,6 +65,7 @@ public class Board {
         
     }
     
+    //build board based on another board
     public Board(Board b) {
         mustCapture = b.mustCapture;
         board = new int[Constants.ROWS][Constants.COLS];
@@ -248,7 +248,7 @@ public class Board {
                 dest = dest.add(m.dir);
                 dest = dest.add(m.dir);
                 
-                calcChainsRecurse(b, m, dest, new LinkedList<Cor>(Arrays.asList(piece)), ans);
+                calcChainsRecurse(b, m, dest, new LinkedList<>(Arrays.asList(piece)), ans);
             }
             return ans;
         }
@@ -459,7 +459,7 @@ public class Board {
     public void print() {
         for (int row = 0; row < Constants.ROWS; ++row) {
             for (int col = 0; col < Constants.COLS; ++col) {
-                System.out.print(abs(board[row][col]) + " ");  
+                System.out.print(board[row][col] + " ");  
             }
             System.out.println();
         }
@@ -510,38 +510,4 @@ public class Board {
     
     private int[][] board; //array representation of the board
     private boolean mustCapture; //determines if the pieces must make a capturing move when calculating valid moves
-    
-    public static void main(String[] args) {
-        Board board = new Board(1);
-        board.print();
-        LinkedList<Move> moves = board.calcAllMoves(new Cor(4, 3));
-        System.out.println("Valid Moves: ");
-        for (Move m : moves) {
-            m.print();
-        }
-        System.out.println();
-        
-        board.doMove(moves.get(7));
-        board.print();
-        /*
-        for (int i = 0; i < 4; ++i) {
-            board.doMove(new Move(new Cor(2, 4 + i), new Cor(Constants.S)));
-            board.print();
-        }
-        board.mustCapture = board.mustCapture(Constants.WHITE);
-        moves = board.calcMoves(new Cor(2, 8));
-        System.out.println("Valid Moves: ");
-        for (Move m : moves) {
-            m.print();
-        }
-        System.out.println();
-        
-        /*
-        for (int i = 0; i < 5; ++i) {
-            board.doMove(new Move(new Cor(2, 4 + i), new Cor(Constants.S)));
-            board.print();
-        }
-        board.doMove(new Move(new Cor(3, 4), new Cor(Constants.SE)));
-        board.print();*/
-    }
 }

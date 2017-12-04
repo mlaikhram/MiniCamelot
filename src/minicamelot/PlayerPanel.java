@@ -13,7 +13,6 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
@@ -55,7 +54,7 @@ public class PlayerPanel extends JPanel {
         c.gridy = 1;
         c.fill = BOTH;
         c.weighty = 0.05;
-        surrender = new JButton("Surrender");
+        surrender = new JButton("End Game");
         surrender.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -69,33 +68,18 @@ public class PlayerPanel extends JPanel {
         add(surrender, c);
     }
     
-    
+    //use html to format text
     public void setText(String text) {
         String htmlText = text.replace("\n", "<br>");
         textLabel.setText("<html><div style='text-align: center;'>" + htmlText + "</div></html>");
     }
-    
-    
+      
     public String getText() {
         return textLabel.getText();
-    }
-    
-    
-    public static void main(String[] args) {
-        JFrame jf = new JFrame("Mini Camelot");
-        jf.setSize(400, 700);
-        jf.setResizable(false);
-        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        PlayerPanel p = new PlayerPanel(null);
-        p.setText("some text\nmore text\neven more text\nHOW MUCH TEXT");
-        jf.add(p);
-        jf.setVisible(true);
     }
     
     
     private MiniCamelot parent;
     private JLabel textLabel;
     private JButton surrender;
-    
 }

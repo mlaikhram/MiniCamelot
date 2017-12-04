@@ -10,7 +10,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.swing.JFrame;
 
 /**
  *
@@ -25,7 +24,6 @@ public class PlayerAI {
         nodes = 0;
         maxPrunes = 0;
         minPrunes = 0;
-        time = 0;
     }
     
     //run the ABSearch in a new thread with a time limit of 10 seconds
@@ -56,31 +54,14 @@ public class PlayerAI {
         return "hmm...";
     }
     
-    
+    //return the relevant stats from the alpha beta search
     public String getStats() {
         return  "Max depth: " + depth + "\n" + 
                 "Total nodes generated: " + nodes + "\n" + 
                 "Total max prunes: " + maxPrunes + "\n" + 
                 "Total min prunes: " + minPrunes;
     }
-    //Random Search Algorithm
-    /*public Move RandomSearch(Board b) {
-        LinkedList<Move> moves = new LinkedList<>();
-        
-        //get all possible moves
-        for (int row = 0; row < Constants.ROWS; ++row) {
-            for (int col = 0; col < Constants.COLS; ++col) {
-                if (b.get(row, col) == Constants.BLACK) {
-                    moves.addAll(b.calcMoves(new Cor(col, row)));
-                }
-            }
-        }
-        
-        //pick a random move to do
-        int index = new Random().nextInt(moves.size());
-        return moves.get(index);
-    }*/
-    
+ 
     
     public boolean isTerminal(GameNode node) {
         GameNode temp = new GameNode(node);
@@ -106,6 +87,8 @@ public class PlayerAI {
                 return -1000;
         }
         
+        //count pieces for each player and make the value of each piece:
+        //20 + distance to opposing castle
         int black = 0;
         int white = 0;
         for (int row = 0; row < Constants.ROWS; ++row) {
@@ -119,8 +102,12 @@ public class PlayerAI {
                 }
             }
         }
-        //return 0;
         return black - white;
+    }
+    
+    
+    public int getDifficulty() {
+        return difficulty;
     }
     
     public void setVal(int newVal) {
@@ -142,25 +129,12 @@ public class PlayerAI {
     public void setMinPrunes(int prunes) {
         minPrunes = prunes;
     }
-    
-    
-    public static void main(String[] args) {
-        JFrame jf = new JFrame("Mini Camelot");
-        jf.setSize(400, 700);
-        jf.setResizable(false);
-        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        BoardGUI board = new BoardGUI(null, new Board());
-        jf.add(board);
-        jf.setVisible(true);
-    }
+
     
     private int difficulty;
     private int val;
     private int depth;
     private int nodes;
     private int maxPrunes;
-    private int minPrunes;
-    private double time;
-    
+    private int minPrunes;  
 }

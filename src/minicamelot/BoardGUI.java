@@ -23,7 +23,6 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import javax.swing.JFrame;
 import javax.swing.Timer;
 
 
@@ -34,7 +33,7 @@ import javax.swing.Timer;
 public class BoardGUI extends JPanel {
     
     //create a new BoardGUI using the given board
-    public BoardGUI(MiniCamelot p, Board b) {
+    public BoardGUI(MiniCamelot p, Board b, int diff, int firstPlayer) {
         
         //initialize to grid with size
         setLayout(new GridLayout(Constants.ROWS, Constants.COLS));
@@ -43,9 +42,14 @@ public class BoardGUI extends JPanel {
         //initialize members
         parent = p;
         board = new Board(b);
-        ai = new PlayerAI(3);
+        ai = new PlayerAI(diff);
         aiMove = null;
-        isPlayerTurn = true;
+        if (firstPlayer == Constants.WHITE) {
+            isPlayerTurn = true;
+        }
+        else {
+            isPlayerTurn = false;
+        }
         canChain = false;
         chain = new LinkedList<>();
         gameOver = false;
@@ -66,7 +70,9 @@ public class BoardGUI extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 chainTimer.stop();
                 try {
-                    aiChainMove();
+                    if (!gameOver) {
+                        aiChainMove();
+                    }
                 } catch (Exception ex) {
                     System.out.println("AI exploded");
                     Logger.getLogger(BoardGUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -112,6 +118,14 @@ public class BoardGUI extends JPanel {
                 tiles.get(row).add(col, tile);
                 add(tiles.get(row).get(col));
             }
+        }
+        
+        //let the ai start if it's their turn
+        if (!isPlayerTurn) {
+            if (parent != null) {
+                parent.setText("AI is thinking...");
+            }
+            aiTimer.start();
         }
     }
     
@@ -178,19 +192,6 @@ public class BoardGUI extends JPanel {
             parent.setText(ai.getMood() + "\n" + ai.getStats());
         }
         chainTimer.start();
-        //calculate destination tile for selected piece
-        /*selectedPiece = aiMove.piece;
-        Cor dest = firstOpen(aiMove.piece, aiMove.dir);
-
-        //update the board
-        board.doMove(aiMove);
-        moveSelectedPiece(dest);
-        isPlayerTurn = true;
-        
-        System.out.println("Current board value: " + ai.eval(new GameNode(board, false)));
-        
-        repaint();
-        revalidate();*/
     }
     
     //allows ai to chain moves together and show it visually
@@ -340,13 +341,13 @@ public class BoardGUI extends JPanel {
     }
     
     
-    public void updateTiles() {
+/*    public void updateTiles() {
         for (int row = 0; row < Constants.ROWS; ++row) {
             for (int col = 0; col < Constants.COLS; ++col) {
                 tiles.get(row).get(col).setIcon(imgs.get("" + board.get(row, col)));
             }
         }
-    }
+    }*/
     
     //create an image icon give a piece value converted to a string
     public ImageIcon iconify(String piece) {
@@ -361,17 +362,6 @@ public class BoardGUI extends JPanel {
             System.out.println("Current path to img is: " + path);
             return new ImageIcon();
         }
-    }
-    
-    public static void main(String[] args) {
-        JFrame jf = new JFrame("Mini Camelot");
-        jf.setSize(400, 700);
-        jf.setResizable(false);
-        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        BoardGUI board = new BoardGUI(null, new Board());
-        jf.add(board);
-        jf.setVisible(true);
     }
     
     private MiniCamelot parent;

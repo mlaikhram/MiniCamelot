@@ -30,17 +30,6 @@ public class GameNode {
         }
         
         //find all appropriate pieces on the board
-        //pieces are added in order from top middle to bottom borders
-        /*for (int row = 0; row < Constants.ROWS; ++row) {
-            for (int col = (Constants.COLS - 1) / 2; col >= 0; --col) {
-                if (board.get(row, col) == color) {
-                    pieces.add(new Cor(col, row));
-                }
-                else if (board.get(row, Constants.COLS - 1 - col) == color) {
-                    pieces.add(new Cor(Constants.COLS - 1 - col, row));
-                }
-            }
-        }*/
         for (int row = 0; row < Constants.ROWS; ++row) {
             for (int col = 0; col < Constants.COLS; ++col) {
                 if (board.get(row, col) == color) {
@@ -107,7 +96,6 @@ public class GameNode {
         return children;
     }
     
-    
     public boolean isMax() {
         return isMax;
     }
@@ -115,7 +103,6 @@ public class GameNode {
     public Board getBoard() {
         return board;
     }
-    
     
     public int countPieces() {
         return pieces.size();
@@ -142,35 +129,9 @@ public class GameNode {
         }
     }
     
-            
-    public static void main(String[] args) {
-        GameNode node = new GameNode(new Board(), true);
-        //node.print();
-        if (node.getChildren().isEmpty()) {
-            node.expand();
-        }
-        LinkedList<Move> moves = node.board.calcMoves(node.getPiece(0));
-        
-        for (GameNode child : node.getChildren().keySet()) {
-            node = child;
-            node.expand();
-            //child.print();
-            break;
-        }
-        moves = node.board.calcMoves(node.getPiece(0));
-        for (GameNode child : node.getChildren().keySet()) {
-            node = child;
-            node.expand();
-            child.print();
-            break;
-        }
-        
-        //node.print();
-    }
-    
+             
     private final boolean isMax;
     private Board board;
     private LinkedList<Cor> pieces;
-    private LinkedHashMap<GameNode, Move> children; //linkedhashmap keeps the initial order of entries
-    
+    private LinkedHashMap<GameNode, Move> children; //linkedhashmap keeps the initial order of entries  
 }

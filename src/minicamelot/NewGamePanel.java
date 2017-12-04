@@ -5,7 +5,6 @@
  */
 package minicamelot;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import static java.awt.GridBagConstraints.*;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -52,8 +50,8 @@ public class NewGamePanel extends JPanel {
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setVerticalAlignment(SwingConstants.CENTER);
         titleLabel.setFont(new Font(titleLabel.getFont().getName(), Font.PLAIN, 40));
-        titleLabel.setBackground(Color.gray);
-        titleLabel.setOpaque(true);
+        //titleLabel.setBackground(Color.gray);
+        //titleLabel.setOpaque(true);
         add(titleLabel, c);
         
         //rules label
@@ -83,7 +81,7 @@ public class NewGamePanel extends JPanel {
         add(difficultyLabel, c);
         
         //difficulty select
-        //c.gridx = 0;
+        difficulty = 0;
         difficultyGroup = new ButtonGroup();
         ArrayList<String> diff = new ArrayList(Arrays.asList("Easy", "Medium", "Expert"));
         for (int i = 0; i < 3; ++i) {
@@ -94,7 +92,6 @@ public class NewGamePanel extends JPanel {
             c.weighty = 0.1;
             final int d = i;
             JRadioButton r = new JRadioButton(diff.get(i));
-            //r.setActionCommand("" + i);
             if (i == 0) {
                 r.setSelected(true);
             }
@@ -117,13 +114,13 @@ public class NewGamePanel extends JPanel {
         add(firstPlayerLabel, c);
         
         //first player select
+        firstPlayer = Constants.WHITE;
         c.gridx = 0;
         c.gridy = 5;
         c.gridwidth = 1;
         c.weighty = 0.1;
         firstGroup = new ButtonGroup();
         JRadioButton w = new JRadioButton("You");
-        //r.setActionCommand("" + i);
         w.setSelected(true);
         w.addActionListener(new ActionListener() {
             @Override
@@ -137,7 +134,6 @@ public class NewGamePanel extends JPanel {
         c.gridy = 5;
         c.weighty = 0.1;
         JRadioButton b = new JRadioButton("AI");
-        //r.setActionCommand("" + i);
         b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -173,19 +169,6 @@ public class NewGamePanel extends JPanel {
         return difficulty;
     }
 
-    
-    public static void main(String[] args) {
-        JFrame jf = new JFrame("Mini Camelot");
-        jf.setSize(400, 700);
-        jf.setResizable(false);
-        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        NewGamePanel p = new NewGamePanel(null);
-        //p.setText("some text\nmore text\neven more text\nHOW MUCH TEXT");
-        jf.add(p);
-        jf.setVisible(true);
-    }
-    
     
     private MiniCamelot parent;
     private JLabel titleLabel;
