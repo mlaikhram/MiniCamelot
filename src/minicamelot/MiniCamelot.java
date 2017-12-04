@@ -29,6 +29,11 @@ public class MiniCamelot extends JFrame {
         add(player);
     }
     
+    //create new game with the rules defined in the new game panel
+    public void startGame() {
+        
+    }
+    
     //ends the game and brings back the new game panel
     public void surrender() {
         System.out.println("I surrender!");
