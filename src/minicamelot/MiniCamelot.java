@@ -40,15 +40,10 @@ public class MiniCamelot extends JFrame {
     
     //create new game with the rules defined in the new game panel
     public void startGame() {
-        System.out.println("creating game with diff: " + newGame.getDifficulty() + " and " + newGame.getFirstPlayer() + " goes first");
         board = new BoardGUI(this, new Board(), newGame.getDifficulty(), newGame.getFirstPlayer());
-        System.out.println("removing components");
         getContentPane().removeAll();
-        System.out.println("adding board");
         add(board);
-        System.out.println("adding player");
         add(player);
-        System.out.println("repainting");
         repaint();
         revalidate();
     }

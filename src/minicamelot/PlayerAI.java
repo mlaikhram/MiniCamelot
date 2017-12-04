@@ -33,7 +33,7 @@ public class PlayerAI {
         Future<?> future = executor.submit(algo);
 
         try {
-            System.out.println(future.get(10, TimeUnit.SECONDS));
+            future.get(10, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             future.cancel(true);
         }
