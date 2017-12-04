@@ -14,6 +14,7 @@ import javax.swing.JFrame;
  *
  * @author Matthew Laikhram
  */
+@SuppressWarnings("serial")
 public class MiniCamelot extends JFrame {
 
     public MiniCamelot() {

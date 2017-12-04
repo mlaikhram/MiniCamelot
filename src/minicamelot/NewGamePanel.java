@@ -50,8 +50,6 @@ public class NewGamePanel extends JPanel {
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setVerticalAlignment(SwingConstants.CENTER);
         titleLabel.setFont(new Font(titleLabel.getFont().getName(), Font.PLAIN, 40));
-        //titleLabel.setBackground(Color.gray);
-        //titleLabel.setOpaque(true);
         add(titleLabel, c);
         
         //rules label
@@ -83,7 +81,7 @@ public class NewGamePanel extends JPanel {
         //difficulty select
         difficulty = 0;
         difficultyGroup = new ButtonGroup();
-        ArrayList<String> diff = new ArrayList(Arrays.asList("Easy", "Medium", "Expert"));
+        ArrayList<String> diff = new ArrayList<>(Arrays.asList("Easy", "Medium", "Expert"));
         for (int i = 0; i < 3; ++i) {
             c.gridx = i;
             c.gridy = 3;
