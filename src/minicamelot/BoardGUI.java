@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -351,15 +350,14 @@ public class BoardGUI extends JPanel {
     
     //create an image icon give a piece value converted to a string
     public ImageIcon iconify(String piece) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        String path = classLoader.getResource("img/" + piece + ".png").getPath();
         try {
-            String path = Paths.get("", "src", "img", piece + ".png").toAbsolutePath().toString();
             BufferedImage img = Constants.resize(ImageIO.read(new File(path)), 50, 50);
             return new ImageIcon(img);
         }
         catch (IOException e) {
-            String path = Paths.get("", "src", "img").toAbsolutePath().toString();
-            System.out.println("Error: Image not found");
-            System.out.println("Current path to img is: " + path);
+            System.out.println("Could not find path " + path);
             return new ImageIcon();
         }
     }

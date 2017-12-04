@@ -6,7 +6,6 @@
 package minicamelot;
 
 import java.awt.GridLayout;
-import java.nio.file.Paths;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
@@ -25,15 +24,20 @@ public class MiniCamelot extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        ImageIcon icon = new ImageIcon(Paths.get("", "src", "img", "MiniCamelotIcon.png").toAbsolutePath().toString());
+        //set icon to custom icon
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        String path = classLoader.getResource("img/MiniCamelotIcon.png").getPath();
+        ImageIcon icon = new ImageIcon(path);
         setIconImage(icon.getImage());
         
+        //board panel
         board = null;
-        //add(board);
         
+        //new game panel
         newGame = new NewGamePanel(this);
         add(newGame);
         
+        //player stats panel
         player = new PlayerPanel(this);
         setText("AI will take a maximum of 10 seconds to calculate a move");
         add(player);
