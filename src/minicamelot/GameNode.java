@@ -114,11 +114,14 @@ public class GameNode {
     
     
     public void print() {
+        PlayerAI ai = new PlayerAI(3);
         System.out.println("Root");
         board.print();
         System.out.println("Children");
         for (GameNode node : children.keySet()) {
             node.board.print();
+            children.get(node).print();
+            System.out.println(ai.eval(node));
             System.out.println();
         }
         System.out.println(children.size() + " children");
@@ -129,7 +132,12 @@ public class GameNode {
         }
     }
     
-             
+    public static void main(String[] args) {
+        GameNode node = new GameNode(new Board(1), false);
+        node.expand();
+        node.print();
+    }
+    
     private final boolean isMax;
     private Board board;
     private LinkedList<Cor> pieces;

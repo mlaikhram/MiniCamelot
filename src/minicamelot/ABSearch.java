@@ -72,7 +72,12 @@ public class ABSearch implements Callable<String> {
     private class Val {
         public Val(int _v, GameNode n) {
             v = _v;
-            node = new GameNode(n);
+            if (n == null) {
+                node = null;
+            }
+            else {
+                node = new GameNode(n);
+            }
         }
         
         public Val(Val val) {
@@ -93,14 +98,17 @@ public class ABSearch implements Callable<String> {
         Val v = new Val(maxv(node, -1000, 1000, 0, depthLimit));
         val = v.v;
 
-        LinkedHashMap<GameNode, Move> moves = node.getChildren();
-        ans = moves.get(v.node);
-
+        //LinkedHashMap<GameNode, Move> moves = node.getChildren();
+        ans = node.getChildren().get(v.node);
         return ans;
     }
     
     //added d to keep track of current depth
     private Val maxv(GameNode node, int a, int b, int d, int depthLimit) throws InterruptedException {
+        String pad = "";
+        for (int i = 0; i < d; ++i) {
+            pad += "\t";
+        }
         if (Thread.interrupted()) {
             throw new InterruptedException();
         }
@@ -115,20 +123,31 @@ public class ABSearch implements Callable<String> {
             node.expand();
             totalNodes += node.getChildren().size();
         }
-        LinkedHashMap<GameNode, Move> children = node.getChildren();
-        for (GameNode child : children.keySet()){
-            v = new Val(max(v, new Val(minv(child, a, b, d + 1, depthLimit).v, child)));
+        //LinkedHashMap<GameNode, Move> children = node.getChildren();
+        for (GameNode child : node.getChildren().keySet()){
+            Val t = new Val(minv(child, a, b, d + 1, depthLimit).v, child);
+            //System.out.print("max(" + v.v + ", " + t.v + ") = ");
+            v = new Val(max(v, t));
+            //System.out.println(v.v);
             if (v.v >= b) {
                 ++maxPrunes;
+                //System.out.println(pad + "max: " + v.v + "(prune)");
+                //v.node.getBoard().print();
                 return v;
             }
             a = Constants.max(a, v.v);
         }
+        //System.out.println(pad + "max: " + v.v);
+        //v.node.getBoard().print();
         return v;
     }
     
     //added d to keep track of current depth
     private Val minv(GameNode node, int a, int b, int d, int depthLimit) throws InterruptedException {
+        String pad = "";
+        for (int i = 0; i < d; ++i) {
+            pad += "\t";
+        }
         if (Thread.interrupted()) {
             throw new InterruptedException();
         }
@@ -143,27 +162,33 @@ public class ABSearch implements Callable<String> {
             node.expand();
             totalNodes += node.getChildren().size();
         }
-        LinkedHashMap<GameNode, Move> children = node.getChildren();
-        for (GameNode child : children.keySet()){
-            //v.v = min(v.v, maxv(child, a, b, d + 1, depthLimit).v);
-            v = new Val(min(v, new Val(maxv(child, a, b, d + 1, depthLimit).v, child)));
+        //LinkedHashMap<GameNode, Move> children = node.getChildren();
+        for (GameNode child : node.getChildren().keySet()){
+            Val t = new Val(maxv(child, a, b, d + 1, depthLimit).v, child);
+            //System.out.print("min(" + v.v + ", " + t.v + ") = ");
+            v = new Val(min(v, t));
+            //System.out.println(v.v);
             if (v.v <= a) {
                 ++minPrunes;
+                //System.out.println(pad + "min: " + v.v + "(prune)");
+                //v.node.getBoard().print();
                 return v;
             }
             b = Constants.min(b, v.v);
         }
+        //System.out.println(pad + "min: " + v.v);
+        //v.node.getBoard().print();
         return v;
     }
     
 
     private Val min(Val a, Val b) {
-        return a.v < b.v ? a : b;
+        return (a.v < b.v) ? new Val(a) : new Val(b);
     }
     
     
     private Val max(Val a, Val b) {
-        return a.v > b.v ? a : b;
+        return (a.v > b.v) ? new Val(a) : new Val(b);
     }
     
     //accessors
@@ -175,6 +200,18 @@ public class ABSearch implements Callable<String> {
         return depth;
     }
     
+    public static void main(String[] args) throws InterruptedException {
+        Board b = new Board(1);
+        PlayerAI ai = new PlayerAI(3);
+        ABSearch ab = new ABSearch(new PlayerAI(3), new Board(1));
+        Move m = ab.ABSearchAlgo(3);
+        b.print();
+        System.out.println();
+        b.doFullMove(m);
+        b.print();
+        System.out.println(ai.eval(new GameNode(b, true)));
+        m.print();
+    }
     
     private PlayerAI ai;
     private Board board;

@@ -54,14 +54,19 @@ public class Board {
         //board[4][3] = 0;
         //board[3][3] = Constants.WHITE;
         
-        board[3][3] = Constants.WHITE;
-        board[3][4] = Constants.WHITE;
         board[4][4] = Constants.WHITE;
-        board[4][2] = Constants.WHITE;
+        board[5][4] = Constants.WHITE;
         board[5][3] = Constants.WHITE;
         board[6][3] = Constants.WHITE;
-        board[7][3] = Constants.BLACK;
+        board[5][2] = Constants.WHITE;
+        board[5][1] = Constants.WHITE;
+        
+        board[8][6] = Constants.BLACK;
+        board[8][5] = Constants.BLACK;
+        board[8][4] = Constants.BLACK;
         board[8][3] = Constants.BLACK;
+        board[9][3] = Constants.BLACK;
+        board[9][2] = Constants.BLACK;
         
     }
     
@@ -418,7 +423,7 @@ public class Board {
     //return the color of the player who won, 0 if its a tie, or -1 if the game is not over yet
     public int checkVictory() {
         //check if black captured castle
-        if (board[0][(Constants.COLS - 1) / 2]== Constants.BLACK && board[0][Constants.COLS - 1 - ((Constants.COLS - 1) / 2)] == Constants.BLACK) {
+        if (board[0][(Constants.COLS - 1) / 2] == Constants.BLACK && board[0][Constants.COLS - 1 - ((Constants.COLS - 1) / 2)] == Constants.BLACK) {
             return Constants.BLACK;
         }
         //check if white captured castle

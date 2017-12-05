@@ -39,7 +39,6 @@ public class PlayerAI {
         }
 
         executor.shutdownNow();
-
         return algo.getMove();
     }
     
@@ -175,6 +174,16 @@ public class PlayerAI {
         minPrunes = prunes;
     }
 
+    
+    public static void main(String[] args) {
+        PlayerAI ai = new PlayerAI(3);
+        GameNode node = new GameNode(new Board(1), false);
+        node.expand();
+        for (GameNode child : node.getChildren().keySet()) {
+            System.out.println(ai.eval(child));
+        }
+        //node.print();
+    }
     
     private int difficulty;
     private int val;
