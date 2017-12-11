@@ -20,6 +20,7 @@ import javax.swing.SwingConstants;
 /**
  *
  * @author Matthew Laikhram
+ * Defines the panel to display the ai stats to the player.
  */
 public class PlayerPanel extends JPanel {
     

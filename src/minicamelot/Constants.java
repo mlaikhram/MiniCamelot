@@ -14,6 +14,8 @@ import java.util.Arrays;
 /**
  *
  * @author Matthew Laikhram
+ * Defines constants and function used throughout the program, such as piece
+ * color, board dimensions, and unit moves
  */
 public class Constants {
     //dimensions of the board
@@ -45,8 +47,7 @@ public class Constants {
     public static int max(int a, int b) {
         return (a > b) ? a : b;
     }
-    
-    
+
     //resizes image to given width/height
     public static BufferedImage resize(BufferedImage image, int width, int height) {
         BufferedImage bi = new BufferedImage(width, height, BufferedImage.TRANSLUCENT);

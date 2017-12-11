@@ -11,6 +11,10 @@ import java.util.LinkedList;
 /**
  *
  * @author Matthew Laikhram
+ * Defines the class that represents a board configuration as an array of ints.
+ * Moves are used on a board to change the configuration.
+ * The board is also responsible for calculating all possible moves given a
+ * coordinate to a piece.
  */
 public class Board {
     

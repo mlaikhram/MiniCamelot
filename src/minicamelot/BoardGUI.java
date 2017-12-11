@@ -28,6 +28,10 @@ import javax.swing.Timer;
 /**
  *
  * @author Matthew Laikhram
+ * Defines the class that displays the board to the user graphically. It defines
+ * the click event, which allows the user to interact with their pieces, as well
+ * as highlights the possible moves for a selected piece. It also disables user
+ * input while the AI is calculating a move.
  */
 public class BoardGUI extends JPanel {
     
@@ -52,6 +56,7 @@ public class BoardGUI extends JPanel {
         canChain = false;
         chain = new LinkedList<>();
         gameOver = false;
+        //timer used to stagger player move and ai move visually
         aiTimer = new Timer(1, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -64,6 +69,7 @@ public class BoardGUI extends JPanel {
                 }
             }
         });
+        //timer used to stagger chain moves for the ai visually
         chainTimer = new Timer(500, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -338,15 +344,6 @@ public class BoardGUI extends JPanel {
         }
         gameOver = true;
     }
-    
-    
-/*    public void updateTiles() {
-        for (int row = 0; row < Constants.ROWS; ++row) {
-            for (int col = 0; col < Constants.COLS; ++col) {
-                tiles.get(row).get(col).setIcon(imgs.get("" + board.get(row, col)));
-            }
-        }
-    }*/
     
     //create an image icon give a piece value converted to a string
     public ImageIcon iconify(String piece) {

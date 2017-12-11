@@ -8,6 +8,7 @@ package minicamelot;
 /**
  *
  * @author Matthew Laikhram
+ * Defines a coordinate pair along with some useful operators
  */
 public class Cor {
     public Cor(int _x, int _y) {

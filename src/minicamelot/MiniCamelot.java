@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 /**
  *
  * @author Matthew Laikhram
+ * Main class that creates the application and links all panels together.
  */
 @SuppressWarnings("serial")
 public class MiniCamelot extends JFrame {

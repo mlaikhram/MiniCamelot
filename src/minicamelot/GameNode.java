@@ -12,6 +12,8 @@ import java.util.Objects;
 /**
  *
  * @author Matthew Laikhram
+ * Defines a node for the alpha-beta search to use. The node can expand into all
+ * possible board configurations based on possible moves
  */
 public class GameNode {
     
@@ -53,9 +55,7 @@ public class GameNode {
         //loop over all possible moves and create nodes for each
         for (Cor piece : pieces) {
             LinkedList<Move> moves = board.calcAllMoves(piece);
-            for (Move move : moves) {
-                /* FUTURE: Calc all chain moves for each move 
-                 */                
+            for (Move move : moves) {              
                 Board b = new Board(board);
                 b.doFullMove(move);
                 GameNode child = new GameNode(b, !isMax);
@@ -130,12 +130,6 @@ public class GameNode {
         for (Cor piece : pieces) {
             piece.print();
         }
-    }
-    
-    public static void main(String[] args) {
-        GameNode node = new GameNode(new Board(1), false);
-        node.expand();
-        node.print();
     }
     
     private final boolean isMax;

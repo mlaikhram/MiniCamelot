@@ -14,6 +14,9 @@ import java.util.concurrent.TimeoutException;
 /**
  *
  * @author Matthew Laikhram
+ * Defines the AI that runs the alpha-beta search algorithm and gets the stats
+ * for the selected move. Also includes the evaluation function used to
+ * determine the value of a board configuration.
  */
 public class PlayerAI {
     
@@ -90,62 +93,56 @@ public class PlayerAI {
         //20 + distance to opposing castle
         int ans = 0;
         int black = 0;
-        int blackTop1 = 8;
-        int blackTop2 = 8;
-        int blackBottom1 = -1;
-        int blackBottom2 = -1;
         int white = 0;
-        int whiteTop1 = 8;
-        int whiteTop2 = 8;
-        int whiteBottom1 = -1;
-        int whiteBottom2 = -1;
+        int distance = 0;
+        int bDist1 = 0;
+        int bDist2 = 0;
+        int wDist1 = 0;
+        int wDist2 = 0;
+
         for (int row = 0; row < Constants.ROWS; ++row) {
             for (int col = 0; col < Constants.COLS; ++col) {
                 if (b.get(row, col) == Constants.BLACK) {
                     int dist = Constants.ROWS - row - 1;
-                    if (blackTop1 != Constants.min(blackTop1, row)) {
-                        blackTop2 = Constants.min(blackTop1, blackTop2);
-                        blackTop1 = row;
+                    black += 1;
+                    //sum distance to castle (reversed)
+                    distance += dist;
+                    //calculate the top two closest pieces to the castle
+                    if (dist > bDist1 || dist > bDist2) {
+                        bDist1 = Constants.max(bDist1, bDist2);
+                        bDist2 = dist;
                     }
-                    else if (blackTop2 != Constants.min(blackTop2, row)) {
-                        blackTop2 = row;
-                    }
-                    if (blackBottom1 != Constants.max(blackBottom1, row)) {
-                        blackBottom2 = Constants.max(blackBottom1, blackBottom2);
-                        blackBottom1 = row;
-                    }
-                    else if (blackBottom2 != Constants.max(blackBottom2, row)) {
-                        blackBottom2 = row;
-                    }
-                    black += 20 + dist;
                 }
                 else if (b.get(row, col) == Constants.WHITE) {
                     int dist = row;
-                    if (whiteTop1 != Constants.min(whiteTop1, row)) {
-                        whiteTop2 = Constants.min(whiteTop1, whiteTop2);
-                        whiteTop1 = row;
+                    white += 1;
+                    //subtreact distance to castle (reversed)
+                    distance -= dist;
+                    //calculate the top two closest pieces to the castle
+                    if (dist > wDist1 || dist > wDist2) {
+                        wDist1 = Constants.max(wDist1, wDist2);
+                        wDist2 = dist;
                     }
-                    else if (whiteTop2 != Constants.min(whiteTop2, row)) {
-                        whiteTop2 = row;
-                    }
-                    if (whiteBottom1 != Constants.max(whiteBottom1, row)) {
-                        whiteBottom2 = Constants.max(whiteBottom1, whiteBottom2);
-                        whiteBottom1 = row;
-                    }
-                    else if (whiteBottom2 != Constants.max(whiteBottom2, row)) {
-                        whiteBottom2 = row;
-                    }
-                    white += 20 + dist;
                 }
             }
         }
-        ans = black - white;
-        if (blackTop1 < whiteTop1 && blackTop2 < whiteTop2) {
-            ans += (Constants.ROWS - 1 - blackTop1) * 10 + (Constants.ROWS - 1 - blackTop2) * 10;
+        //eval is sum of all your pieces - opposing pieces * 20
+        ans += 20 * (black - white);
+        //if you only have one piece, then that's all you care about
+        if (black < 2) {
+            return ans;
         }
-        if (whiteBottom1 > blackBottom1 && whiteBottom2 < blackBottom1) {
-            ans -= whiteBottom1 * 10 + whiteBottom2 * 10;
+        //if you're second closest piece is closer to the castle than the
+        //opponent's closest piece, then increase the value of the board
+        if (Constants.min(bDist1, bDist2) > Constants.max(wDist1, wDist2)) {
+            ans += 15 * (bDist1 + bDist2);
         }
+        //if the opposite is true, decrease the value of the board
+        else if (Constants.min(wDist1, wDist2) > Constants.max(bDist1, bDist2)) {
+            ans -= 15 * (wDist1 + wDist2);
+        }
+        //add all distances to give incentive to move pieces forward
+        ans += distance;
         return ans;
     }
     
@@ -174,16 +171,6 @@ public class PlayerAI {
         minPrunes = prunes;
     }
 
-    
-    public static void main(String[] args) {
-        PlayerAI ai = new PlayerAI(3);
-        GameNode node = new GameNode(new Board(1), false);
-        node.expand();
-        for (GameNode child : node.getChildren().keySet()) {
-            System.out.println(ai.eval(child));
-        }
-        //node.print();
-    }
     
     private int difficulty;
     private int val;

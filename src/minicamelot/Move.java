@@ -12,6 +12,8 @@ import java.util.Objects;
 /**
  *
  * @author Matthew Laikhram
+ * Defines a move as a coordinate to a piece and a direction to move the piece.
+ * Also can contain a pointer to another move if chaining is possible.
  */
 public class Move {
     

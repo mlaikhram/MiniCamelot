@@ -23,6 +23,7 @@ import javax.swing.SwingConstants;
 /**
  *
  * @author Matthew Laikhram
+ * Defines the panel for creating a new game with initial settings and rules.
  */
 public class NewGamePanel extends JPanel {
     
